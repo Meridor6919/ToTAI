@@ -17,7 +17,7 @@ MsgHandler::MsgHandler()
 
 MsgHandler::~MsgHandler()
 {
-	handling_thread->~thread();
+	handling_thread->join();
 	delete handling_thread;
 }
 
