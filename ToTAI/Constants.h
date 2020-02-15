@@ -1,9 +1,8 @@
 #pragma once
 #include <string>
 namespace ConnectionCodes{
-	enum Codes {
+	enum Codes{
 		Start = 10,
-		Exit,
 		NewTurn,
 		GetInit,
 		GetCarNames,
