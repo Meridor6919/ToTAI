@@ -70,7 +70,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>..\..\Tour-of-Turns\Project3\GameFiles</OutDir>
+    <OutDir>..\..\Tour-of-Turns\Project3\GameFiles\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -118,6 +118,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="ToTAIFunctions.cpp" />
+    <ClCompile Include="ToTAIFunctions.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Constants.h" />

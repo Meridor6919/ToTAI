@@ -3,8 +3,8 @@
 namespace ConnectionCodes{
 	enum Codes{
 		Start = 10,
-		NewTurn,
 		GetInit,
+		NewTurn,
 		GetCarNames,
 		GetTireNames,
 		GetCarParams,
