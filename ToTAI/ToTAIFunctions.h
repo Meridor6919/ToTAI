@@ -27,4 +27,10 @@ namespace ToTAIFunctions
 	//Returns all segments of tour
 	std::vector<std::string> GetTour();
 
+	void SetAction(int id, int action_type, int value);
+	void SetAttack(int id, int target);
+	void SetName(int id, std::string name);
+	void SetTires(int id, std::string tire_path);
+	void SetCar(int id, std::string car_path);
+
 }

@@ -113,3 +113,23 @@ std::vector<std::string> ToTAIFunctions::GetTour()
 	}
 	return ret;
 }
+void ToTAIFunctions::SetAction(int id, int action_type, int value)
+{
+	std::cout << ConnectionCodes::SetAction << id << action_type << value << std::endl;
+}
+void ToTAIFunctions::SetAttack(int id, int target)
+{
+	std::cout << ConnectionCodes::SetAttack << id << target << std::endl;
+}
+void ToTAIFunctions::SetName(int id, std::string name)
+{
+	std::cout << ConnectionCodes::SetName << id << name << std::endl;
+}
+void ToTAIFunctions::SetTires(int id, std::string tire_path)
+{
+	std::cout << ConnectionCodes::SetTires << id << tire_path << std::endl;
+}
+void ToTAIFunctions::SetCar(int id, std::string car_path)
+{
+	std::cout << ConnectionCodes::SetCar << id << car_path << std::endl;
+}
