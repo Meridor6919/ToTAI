@@ -38,7 +38,7 @@ void Game::GetCars()
 }
 void Game::GetTires()
 {
-	const std::vector<std::string> tire_names = ToTAIFunctions::GetCarNames();
+	const std::vector<std::string> tire_names = ToTAIFunctions::GetTireNames();
 	int *best_score = new int[number_of_instances];
 	int *best_index = new int[number_of_instances];
 	memset(best_score, 0, number_of_instances);
