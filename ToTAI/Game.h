@@ -2,6 +2,7 @@
 #include "AIInstance.h"
 #include "ToTAIFunctions.h"
 #include <vector>
+#include <time.h>
 
 class Game
 {

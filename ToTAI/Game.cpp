@@ -4,7 +4,7 @@ void Game::GetNames()
 {
 	for (int i = 0; i < number_of_instances; ++i)
 	{
-		ai[i].GetName();
+		ToTAIFunctions::SetName(i, ai[i].GetName());
 	}
 }
 void Game::GetCars()
@@ -68,6 +68,7 @@ void Game::GetTires()
 
 Game::Game()
 {
+	srand(time(0));
 	ToTAIFunctions::Start();
 	const std::pair<int, int> init = ToTAIFunctions::GetInit();
 	number_of_instances = init.first;
