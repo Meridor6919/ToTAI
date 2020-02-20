@@ -1,8 +1,8 @@
-#include "ToTAIFunctions.h"
+#include "Game.h"
 
 int main()
 {
-	ToTAIFunctions::Start();
-	
-	ToTAIFunctions::Exit();	
+	Game game_instance;
+	game_instance.LobbyPhase();
+	game_instance.RacePhase();	
 }

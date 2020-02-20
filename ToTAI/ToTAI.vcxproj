@@ -117,12 +117,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AIInstance.cpp" />
+    <ClCompile Include="Game.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ToTAIFunctions.cpp" />
     <ClCompile Include="ToTAIFunctions.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AIInstance.h" />
     <ClInclude Include="Constants.h" />
+    <ClInclude Include="Game.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
