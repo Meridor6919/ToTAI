@@ -19,4 +19,9 @@ namespace ConnectionCodes{
 		last
 	};
 }
+namespace GameValues {
+	enum Values {
+		TerrainTypes = 6,
+	};
+}
 
