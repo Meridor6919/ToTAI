@@ -49,7 +49,7 @@ int AIInstance::GetTireScore(const std::vector<std::string>& tour, const std::ve
 			--wanted_number < 1 ? wanted_number = 1: 0;
 			--extra < 1 ? extra = 1: 0;
 		}
-		return result;
+		return result/2;
 	};
 
 	int terrain[GameValues::TerrainTypes] = { 0,0,0,0,0,0 };
@@ -68,6 +68,7 @@ int AIInstance::GetTireScore(const std::vector<std::string>& tour, const std::ve
 			{
 				x = atof(tire_params[i].substr(0, j).c_str());
 				y = atof(tire_params[i].substr(j + 1, static_cast<int>(tire_params[i].size()) - j - 1).c_str());
+				break;
 			}
 		}
 		for (int j = 0; j < static_cast<int>(y - x + 1); ++j)
