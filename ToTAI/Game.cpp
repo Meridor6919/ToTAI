@@ -12,8 +12,11 @@ void Game::GetCars()
 	const std::vector<std::string> car_names = ToTAIFunctions::GetCarNames();
 	int *best_score = new int[number_of_instances];
 	int *best_index = new int[number_of_instances];
-	memset(best_score, 0, number_of_instances);
-	memset(best_index, 0, number_of_instances);
+	for (int i = 0; i < number_of_instances; ++i)
+	{
+		best_score[i] = 0;
+		best_index[i] = 0;
+	}
 
 	for (int i = 0; i < static_cast<int>(car_names.size()); ++i)
 	{
@@ -41,8 +44,11 @@ void Game::GetTires()
 	const std::vector<std::string> tire_names = ToTAIFunctions::GetTireNames();
 	int *best_score = new int[number_of_instances];
 	int *best_index = new int[number_of_instances];
-	memset(best_score, 0, number_of_instances);
-	memset(best_index, 0, number_of_instances);
+	for (int i = 0; i < number_of_instances; ++i)
+	{
+		best_score[i] = 0;
+		best_index[i] = 0;
+	}
 
 	for (int i = 0; i < static_cast<int>(tire_names.size()); ++i)
 	{
