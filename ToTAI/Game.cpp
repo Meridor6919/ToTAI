@@ -113,7 +113,7 @@ Game::Game()
 	tour = PipeConnection::GetTour();
 	for (int i = 0; i < number_of_instances; ++i)
 	{
-		ai.push_back(AIhandler());
+		ai.push_back(AIobject());
 	}
 }
 

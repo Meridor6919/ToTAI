@@ -1,5 +1,5 @@
 #pragma once
-#include "AIhandler.h"
+#include "AIobject.h"
 #include "PipeConnection.h"
 #include <vector>
 #include <time.h>
@@ -8,7 +8,7 @@ class Game
 {
 	int number_of_instances;
 	int number_of_all_participants;
-	std::vector<AIhandler> ai;
+	std::vector<AIobject> ai;
 	std::vector<std::string> tour;
 
 	void GetNames();
