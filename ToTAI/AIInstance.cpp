@@ -14,6 +14,30 @@ double AIInstance::GetParameterScore(double parameter_value, const double max, c
 	return sqrt(max*max - parameter_value * parameter_value) * maximum_score/max;
 }
 
+int AIInstance::GetMaxSpeed(const std::vector<std::string>& tour)
+{
+	double max_speed = 0.0;
+	int count = 0;
+	for (int i = 0; i < static_cast<int>(tour.size()); ++i)
+	{
+		const int tour_size = static_cast<int>(tour[i].size());
+		if ( tour_size > 1)
+		{
+			double required = atof(tour[i].substr(1, tour_size - 1).c_str());
+			if (required*(count / 2 + 1) > max_speed)
+			{
+				max_speed = required * (count / 2 + 1)
+			}
+			count = 0;
+		}
+		else
+		{
+			++count;
+		}
+	}
+	return static_cast<int>(max_speed);
+}
+
 AIInstance::AIInstance()
 {
 	behaviour = rand() % 3;
@@ -46,7 +70,7 @@ std::string AIInstance::GetName()
 int AIInstance::GetCarScore(const std::vector<std::string>& tour, const std::vector<int>& car_params)
 {
 	double final_score = 1;
-	const int optimum_max_speed = 200;
+	const int optimum_max_speed = GetMaxSpeed(tour);
 	switch (behaviour)
 	{
 	case GameValues::BehaviourDrifter:
@@ -88,7 +112,7 @@ int AIInstance::GetCarScore(const std::vector<std::string>& tour, const std::vec
 			break;
 		}
 	}
-	return final_score;
+	return static_cast<int>(final_score);
 }
 
 int AIInstance::GetTireScore(const std::vector<std::string>& tour, const std::vector<std::string>& tire_params)
@@ -96,7 +120,7 @@ int AIInstance::GetTireScore(const std::vector<std::string>& tour, const std::ve
 	auto Probability = [](double number_of_tests, double wanted_number) {
 
 		double result = 1;
-		int extra = number_of_tests - wanted_number;
+		double extra = number_of_tests - wanted_number;
 		extra < 1 ? extra = 1 : 0;
 		wanted_number < 1 ? wanted_number = 1 : 0;
 		while (number_of_tests > 1)

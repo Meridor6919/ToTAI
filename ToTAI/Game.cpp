@@ -74,7 +74,7 @@ void Game::GetTires()
 
 Game::Game()
 {
-	srand(time(0));
+	srand(static_cast<unsigned int>(time(0)));
 	ToTAIFunctions::Start();
 	const std::pair<int, int> init = ToTAIFunctions::GetInit();
 	number_of_instances = init.first;

@@ -6,6 +6,7 @@
 class AIInstance
 {
 	double GetParameterScore(double parameter_value, const double max, const double maximum_score);
+	int GetMaxSpeed(const std::vector<std::string>&tour);
 	int behaviour;
 public:
 	AIInstance();
