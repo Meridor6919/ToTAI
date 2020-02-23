@@ -15,6 +15,7 @@ class Game
 	void GetCars();
 	void GetTires();
 
+	int GetMaxSpeed(const std::vector<std::string>&tour);
 
 public:
 	Game();
