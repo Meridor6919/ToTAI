@@ -2,10 +2,10 @@
 #include <vector>
 #include <string>
 #include "Constants.h"
+#include "AIobject.h"
 
 class AIhandler
 {
-	double GetProbability(double number_of_tests, double wanted_number);
 	double GetParameterScore(double parameter_value, const double max, const double maximum_score);
 	int behaviour;
 public:

@@ -1,21 +1,5 @@
 #include "AIhandler.h"
 
-double AIhandler::GetProbability(double number_of_tests, double wanted_number)
-{
-	double result = 1;
-	double extra = number_of_tests - wanted_number;
-	extra < 1 ? extra = 1 : 0;
-	wanted_number < 1 ? wanted_number = 1 : 0;
-	while (number_of_tests > 1)
-	{
-		result *= number_of_tests / wanted_number / extra / 2;
-		--number_of_tests;
-		--wanted_number < 1 ? wanted_number = 1 : 0;
-		--extra < 1 ? extra = 1 : 0;
-	}
-	return result / 2;
-}
-
 double AIhandler::GetParameterScore(double parameter_value, const double max, const double maximum_score)
 {
 	if (parameter_value > max)
@@ -124,7 +108,7 @@ int AIhandler::GetTireScore(const std::vector<int>& terrain, const std::vector<s
 		}
 		for (int j = 0; j < static_cast<int>(y - x + 1); ++j)
 		{
-			points += GetProbability(y, j) * terrain[i];
+			points += AIobject::GetProbability(y, j) * terrain[i];
 		}
 	}
 	return static_cast<int>(points*100.0f);
