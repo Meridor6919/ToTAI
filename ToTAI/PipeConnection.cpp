@@ -1,17 +1,17 @@
-#include "ToTAIFunctions.h"
+#include "PipeConnection.h"
 
-void ToTAIFunctions::Start()
+void PipeConnection::Start()
 {
 	std::string temp;
 	std::cout << ConnectionCodes::Start << std::endl;
 	std::cin >> temp;
 }
-void ToTAIFunctions::Exit()
+void PipeConnection::Exit()
 {
 	std::string temp;
 	std::cin >> temp;
 }
-std::pair<int, int> ToTAIFunctions::GetInit()
+std::pair<int, int> PipeConnection::GetInit()
 {
 	int x;
 	std::string temp;
@@ -21,7 +21,7 @@ std::pair<int, int> ToTAIFunctions::GetInit()
 	std::cin >> temp;
 	return { x, temp[0] - 48 };
 }
-bool ToTAIFunctions::NewTurn(int id)
+bool PipeConnection::NewTurn(int id)
 {
 	std::string temp;
 	std::cout << ConnectionCodes::NewTurn << id << std::endl;
@@ -35,7 +35,7 @@ bool ToTAIFunctions::NewTurn(int id)
 		return false;
 	}
 }
-std::vector<std::string> ToTAIFunctions::GetCarNames()
+std::vector<std::string> PipeConnection::GetCarNames()
 {
 	std::vector<std::string> ret;
 	std::string temp;
@@ -49,7 +49,7 @@ std::vector<std::string> ToTAIFunctions::GetCarNames()
 	}
 	return ret;
 }
-std::vector<std::string> ToTAIFunctions::GetTireNames()
+std::vector<std::string> PipeConnection::GetTireNames()
 {
 	std::vector<std::string> ret;
 	std::string temp;
@@ -63,7 +63,7 @@ std::vector<std::string> ToTAIFunctions::GetTireNames()
 	}
 	return ret;
 }
-std::vector<int> ToTAIFunctions::GetCarParams(std::string car_path)
+std::vector<int> PipeConnection::GetCarParams(std::string car_path)
 {
 	std::vector<int> ret;
 	std::string temp;
@@ -75,7 +75,7 @@ std::vector<int> ToTAIFunctions::GetCarParams(std::string car_path)
 	}
 	return ret;
 }
-std::vector<std::string> ToTAIFunctions::GetTireParams(std::string tire_path)
+std::vector<std::string> PipeConnection::GetTireParams(std::string tire_path)
 {
 	std::vector<std::string> ret;
 	std::string temp;
@@ -87,7 +87,7 @@ std::vector<std::string> ToTAIFunctions::GetTireParams(std::string tire_path)
 	}
 	return ret;
 }
-std::vector<std::string> ToTAIFunctions::GetAllAtributes(int number_of_participants)
+std::vector<std::string> PipeConnection::GetAllAtributes(int number_of_participants)
 {
 	std::vector<std::string> ret;
 	std::string temp;
@@ -99,7 +99,7 @@ std::vector<std::string> ToTAIFunctions::GetAllAtributes(int number_of_participa
 	}
 	return ret;
 }
-std::vector<std::string> ToTAIFunctions::GetTour()
+std::vector<std::string> PipeConnection::GetTour()
 {
 	std::vector<std::string> ret;
 	std::string temp;
@@ -113,23 +113,23 @@ std::vector<std::string> ToTAIFunctions::GetTour()
 	}
 	return ret;
 }
-void ToTAIFunctions::SetAction(int id, int action_type, int value)
+void PipeConnection::SetAction(int id, int action_type, int value)
 {
 	std::cout << ConnectionCodes::SetAction << id << action_type << value << std::endl;
 }
-void ToTAIFunctions::SetAttack(int id, int target)
+void PipeConnection::SetAttack(int id, int target)
 {
 	std::cout << ConnectionCodes::SetAttack << id << target << std::endl;
 }
-void ToTAIFunctions::SetName(int id, std::string name)
+void PipeConnection::SetName(int id, std::string name)
 {
 	std::cout << ConnectionCodes::SetName << id << name << std::endl;
 }
-void ToTAIFunctions::SetTires(int id, std::string tire_path)
+void PipeConnection::SetTires(int id, std::string tire_path)
 {
 	std::cout << ConnectionCodes::SetTires << id << tire_path << std::endl;
 }
-void ToTAIFunctions::SetCar(int id, std::string car_path)
+void PipeConnection::SetCar(int id, std::string car_path)
 {
 	std::cout << ConnectionCodes::SetCar << id << car_path << std::endl;
 }

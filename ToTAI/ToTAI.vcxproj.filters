@@ -18,16 +18,16 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ToTAIFunctions.h">
-      <Filter>Header Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ToTAIFunctions.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Game.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="AIInstance.cpp">
+    <ClCompile Include="AIhandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PipeConnection.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PipeConnection.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -38,7 +38,7 @@
     <ClInclude Include="Game.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="AIInstance.h">
+    <ClInclude Include="AIhandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

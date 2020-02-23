@@ -117,14 +117,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="AIInstance.cpp" />
+    <ClCompile Include="AIhandler.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="ToTAIFunctions.cpp" />
-    <ClCompile Include="ToTAIFunctions.h" />
+    <ClCompile Include="PipeConnection.cpp" />
+    <ClCompile Include="PipeConnection.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AIInstance.h" />
+    <ClInclude Include="AIhandler.h" />
     <ClInclude Include="Constants.h" />
     <ClInclude Include="Game.h" />
   </ItemGroup>

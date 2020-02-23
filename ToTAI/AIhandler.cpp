@@ -1,6 +1,6 @@
-#include "AIInstance.h"
+#include "AIhandler.h"
 
-double AIInstance::GetProbability(double number_of_tests, double wanted_number)
+double AIhandler::GetProbability(double number_of_tests, double wanted_number)
 {
 	double result = 1;
 	double extra = number_of_tests - wanted_number;
@@ -16,7 +16,7 @@ double AIInstance::GetProbability(double number_of_tests, double wanted_number)
 	return result / 2;
 }
 
-double AIInstance::GetParameterScore(double parameter_value, const double max, const double maximum_score)
+double AIhandler::GetParameterScore(double parameter_value, const double max, const double maximum_score)
 {
 	if (parameter_value > max)
 	{
@@ -29,12 +29,12 @@ double AIInstance::GetParameterScore(double parameter_value, const double max, c
 	parameter_value = max - parameter_value;
 	return sqrt(max*max - parameter_value * parameter_value) * maximum_score/max;
 }
-AIInstance::AIInstance()
+AIhandler::AIhandler()
 {
 	behaviour = rand() % 3;
 }
 
-std::string AIInstance::GetName()
+std::string AIhandler::GetName()
 {
 	static std::vector<std::vector<const char*>> names = { { "Mark Driver", "Isao Fujimoto", "Miguela Aguela", "Hans Ufner", "Igor Belov", "Andrew Anderson", "Jane Turning", "Sam Samson", "Ed Thompson", "Barbara Hudson",
 													"Frank Sharpe", "Alan Robinson", "Paul Reynolds", "Armand Buchard", "Leon Guerin", "Franz Geisler", "Rudi Schultz", "Schultz Vogel", "Tatsuo Okabe", "Yasuaki Tanikawa",
@@ -58,7 +58,7 @@ std::string AIInstance::GetName()
 	return ret;
 }
 
-int AIInstance::GetCarScore(const int optimum_max_speed, const std::vector<int>& car_params)
+int AIhandler::GetCarScore(const int optimum_max_speed, const std::vector<int>& car_params)
 {
 	double final_score = 1;
 	switch (behaviour)
@@ -105,7 +105,7 @@ int AIInstance::GetCarScore(const int optimum_max_speed, const std::vector<int>&
 	return static_cast<int>(final_score);
 }
 
-int AIInstance::GetTireScore(const std::vector<int>& terrain, const std::vector<std::string>& tire_params)
+int AIhandler::GetTireScore(const std::vector<int>& terrain, const std::vector<std::string>& tire_params)
 {
 	double points = 0;
 	double x;
@@ -130,10 +130,10 @@ int AIInstance::GetTireScore(const std::vector<int>& terrain, const std::vector<
 	return static_cast<int>(points*100.0f);
 }
 
-void AIInstance::SetCarAttributes(const std::vector<int>& car_params)
+void AIhandler::SetCarAttributes(const std::vector<int>& car_params)
 {
 }
 
-void AIInstance::SetTireAttributes(const std::vector<std::string>& tire_params)
+void AIhandler::SetTireAttributes(const std::vector<std::string>& tire_params)
 {
 }

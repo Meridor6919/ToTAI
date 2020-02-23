@@ -4,7 +4,7 @@
 #include <vector>
 #include <string>
 
-namespace ToTAIFunctions
+namespace PipeConnection
 {
 	//Waits for parent process to initialize
 	void Start();

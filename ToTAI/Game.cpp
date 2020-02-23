@@ -4,12 +4,12 @@ void Game::GetNames()
 {
 	for (int i = 0; i < number_of_instances; ++i)
 	{
-		ToTAIFunctions::SetName(i, ai[i].GetName());
+		PipeConnection::SetName(i, ai[i].GetName());
 	}
 }
 void Game::GetCars()
 {
-	const std::vector<std::string> car_names = ToTAIFunctions::GetCarNames();
+	const std::vector<std::string> car_names = PipeConnection::GetCarNames();
 	int *best_score = new int[number_of_instances];
 	int *best_index = new int[number_of_instances];
 	for (int i = 0; i < number_of_instances; ++i)
@@ -20,7 +20,7 @@ void Game::GetCars()
 	const int max_speed = GetMaxSpeed(tour);
 	for (int i = 0; i < static_cast<int>(car_names.size()); ++i)
 	{
-		const std::vector<int> car_params = ToTAIFunctions::GetCarParams(car_names[i]);
+		const std::vector<int> car_params = PipeConnection::GetCarParams(car_names[i]);
 		for (int j = 0; j < number_of_instances; ++j)
 		{
 			int score = ai[j].GetCarScore(max_speed, car_params);
@@ -33,15 +33,15 @@ void Game::GetCars()
 	}
 	for (int i = 0; i < number_of_instances; ++i)
 	{
-		ai[i].SetCarAttributes(ToTAIFunctions::GetCarParams(car_names[best_index[i]]));
-		ToTAIFunctions::SetCar(i, car_names[best_index[i]]);
+		ai[i].SetCarAttributes(PipeConnection::GetCarParams(car_names[best_index[i]]));
+		PipeConnection::SetCar(i, car_names[best_index[i]]);
 	}
 	delete best_score;
 	delete best_index;
 }
 void Game::GetTires()
 {
-	const std::vector<std::string> tire_names = ToTAIFunctions::GetTireNames();
+	const std::vector<std::string> tire_names = PipeConnection::GetTireNames();
 	int *best_score = new int[number_of_instances];
 	int *best_index = new int[number_of_instances];
 	for (int i = 0; i < number_of_instances; ++i)
@@ -58,7 +58,7 @@ void Game::GetTires()
 
 	for (int i = 0; i < static_cast<int>(tire_names.size()); ++i)
 	{
-		const std::vector<std::string> car_params = ToTAIFunctions::GetTireParams(tire_names[i]);
+		const std::vector<std::string> car_params = PipeConnection::GetTireParams(tire_names[i]);
 		for (int j = 0; j < number_of_instances; ++j)
 		{
 			int score = ai[j].GetTireScore(terrain, car_params);
@@ -71,8 +71,8 @@ void Game::GetTires()
 	}
 	for (int i = 0; i < number_of_instances; ++i)
 	{
-		ai[i].SetTireAttributes(ToTAIFunctions::GetTireParams(tire_names[best_index[i]]));
-		ToTAIFunctions::SetTires(i, tire_names[best_index[i]]);
+		ai[i].SetTireAttributes(PipeConnection::GetTireParams(tire_names[best_index[i]]));
+		PipeConnection::SetTires(i, tire_names[best_index[i]]);
 	}
 	delete best_score;
 	delete best_index;
@@ -106,14 +106,14 @@ int Game::GetMaxSpeed(const std::vector<std::string>& tour)
 Game::Game()
 {
 	srand(static_cast<unsigned int>(time(0)));
-	ToTAIFunctions::Start();
-	const std::pair<int, int> init = ToTAIFunctions::GetInit();
+	PipeConnection::Start();
+	const std::pair<int, int> init = PipeConnection::GetInit();
 	number_of_instances = init.first;
 	number_of_all_participants = init.second;
-	tour = ToTAIFunctions::GetTour();
+	tour = PipeConnection::GetTour();
 	for (int i = 0; i < number_of_instances; ++i)
 	{
-		ai.push_back(AIInstance());
+		ai.push_back(AIhandler());
 	}
 }
 
@@ -131,5 +131,5 @@ void Game::RacePhase()
 
 Game::~Game()
 {
-	ToTAIFunctions::Exit();
+	PipeConnection::Exit();
 }
