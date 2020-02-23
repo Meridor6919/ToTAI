@@ -1,5 +1,19 @@
 #include "AIInstance.h"
 
+double AIInstance::GetParameterScore(double parameter_value, const double max, const double maximum_score)
+{
+	if (parameter_value > max)
+	{
+		parameter_value = max;
+	}
+	if (parameter_value < 0)
+	{
+		parameter_value = 0;
+	}
+	parameter_value = max - parameter_value;
+	return sqrt(max*max - parameter_value * parameter_value) * maximum_score/max;
+}
+
 AIInstance::AIInstance()
 {
 	behaviour = rand() % 3;
@@ -31,7 +45,50 @@ std::string AIInstance::GetName()
 
 int AIInstance::GetCarScore(const std::vector<std::string>& tour, const std::vector<int>& car_params)
 {
-	return 0;
+	double final_score = 1;
+	const int optimum_max_speed = 200;
+	switch (behaviour)
+	{
+	case GameValues::BehaviourDrifter:
+		{
+			//max value - 5 000 000
+			final_score *= GetParameterScore(car_params[CarAttributes::max_accelerating], car_params[CarAttributes::max_speed], 10.0);//acceleration
+			final_score *= GetParameterScore(car_params[CarAttributes::max_speed], optimum_max_speed, 5.0);//max_speed
+			final_score *= GetParameterScore(car_params[CarAttributes::max_braking], car_params[CarAttributes::max_speed]/10*9, 2.0);//max_braking
+			final_score *= GetParameterScore(car_params[CarAttributes::max_speed] - car_params[CarAttributes::hand_brake_value], car_params[CarAttributes::max_speed], 10.0) + 0.01;//hand-brake-value
+			final_score *= GetParameterScore(car_params[CarAttributes::durability], car_params[CarAttributes::max_speed]*10, 10.0);//durability
+			final_score *= GetParameterScore(car_params[CarAttributes::drift_mod], 1000, 100.0);//drift_mod
+			final_score *= GetParameterScore(car_params[CarAttributes::visibility], 10, 5.0);//visibility
+			break;
+		}
+		case GameValues::BehaviourAggressive:
+		{
+			//max value - 3 037 500
+			final_score *= GetParameterScore(car_params[CarAttributes::max_accelerating], car_params[CarAttributes::max_speed], 15.0);//acceleration
+			final_score *= GetParameterScore(car_params[CarAttributes::max_speed], optimum_max_speed, 15.0);//max_speed
+			final_score *= GetParameterScore(car_params[CarAttributes::max_braking], car_params[CarAttributes::max_speed] / 10 * 9, 1.0);//max_braking
+			final_score *= GetParameterScore(car_params[CarAttributes::hand_brake_value], car_params[CarAttributes::max_speed], 1.0) + 0.01;//hand-brake-value
+			final_score *= GetParameterScore(car_params[CarAttributes::durability], car_params[CarAttributes::max_speed] * 10, 15.0);//durability
+			final_score *= GetParameterScore(car_params[CarAttributes::turn_mod], 1000, 30.0);//turn_mod
+			final_score *= GetParameterScore(car_params[CarAttributes::drift_mod], 1000, 30.0);//drift_mod
+			final_score *= GetParameterScore(car_params[CarAttributes::visibility], 10, 1.0);//visibility
+			break;
+		}
+		case GameValues::BehaviourBalanced:
+		{
+			//max value - 281 250 000
+			final_score *= GetParameterScore(car_params[CarAttributes::max_accelerating], car_params[CarAttributes::max_speed], 15.0);//acceleration
+			final_score *= GetParameterScore(car_params[CarAttributes::max_speed], optimum_max_speed, 10.0);//max_speed
+			final_score *= GetParameterScore(car_params[CarAttributes::max_braking], car_params[CarAttributes::max_speed] / 10 * 9, 5.0);//max_braking
+			final_score *= GetParameterScore(car_params[CarAttributes::hand_brake_value], car_params[CarAttributes::max_speed], 5.0);//hand-brake-value
+			final_score *= GetParameterScore(car_params[CarAttributes::durability], car_params[CarAttributes::max_speed] * 10, 10.0);//durability
+			final_score *= GetParameterScore(car_params[CarAttributes::turn_mod], 1000, 50.0);//turn_mod
+			final_score *= GetParameterScore(car_params[CarAttributes::drift_mod], 1000, 30.0);//drift_mod
+			final_score *= GetParameterScore(car_params[CarAttributes::visibility], 10, 5.0);//visibility
+			break;
+		}
+	}
+	return final_score;
 }
 
 int AIInstance::GetTireScore(const std::vector<std::string>& tour, const std::vector<std::string>& tire_params)

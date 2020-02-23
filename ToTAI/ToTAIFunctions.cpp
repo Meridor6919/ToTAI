@@ -68,7 +68,7 @@ std::vector<int> ToTAIFunctions::GetCarParams(std::string car_path)
 	std::vector<int> ret;
 	std::string temp;
 	std::cout << ConnectionCodes::GetCarParams << car_path << std::endl;
-	for (int i = 0; i < 8; ++i)
+	for (int i = 0; i < CarAttributes::last; ++i)
 	{
 		std::cin >> temp;
 		ret.emplace_back(atoi(temp.c_str()));
@@ -80,7 +80,7 @@ std::vector<std::string> ToTAIFunctions::GetTireParams(std::string tire_path)
 	std::vector<std::string> ret;
 	std::string temp;
 	std::cout << ConnectionCodes::GetTireParams << tire_path << std::endl;
-	for (int i = 0; i < 6; ++i)
+	for (int i = 0; i < GameValues::TerrainTypes; ++i)
 	{
 		std::cin >> temp;
 		ret.emplace_back(temp);

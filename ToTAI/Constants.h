@@ -21,7 +21,24 @@ namespace ConnectionCodes{
 }
 namespace GameValues {
 	enum Values {
+		BehaviourDrifter,
+		BehaviourAggressive,
+		BehaviourBalanced,
 		TerrainTypes = 6,
 	};
 }
-
+namespace CarAttributes
+{
+	enum
+	{
+		max_speed,
+		max_accelerating,
+		max_braking,
+		hand_brake_value,
+		durability,
+		visibility,
+		turn_mod,
+		drift_mod,
+		last
+	};
+}
