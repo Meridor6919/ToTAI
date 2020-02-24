@@ -126,7 +126,29 @@ void Game::LobbyPhase()
 
 void Game::RacePhase()
 {
-
+	while (static_cast<int>(tour.size()))
+	{
+		const int ai_index = number_of_all_participants - number_of_instances;
+		for (int i = 0; i < number_of_instances; ++i)
+		{
+			while (!PipeConnection::NewTurn(i))
+			{
+				std::this_thread::sleep_for(std::chrono::milliseconds(20));
+			}
+		}
+		const std::vector<std::string> raw_data = PipeConnection::GetAllAtributes(number_of_all_participants);
+		for (int i = 0; i < number_of_instances; ++i)
+		{
+			const double durablity = atof(raw_data[(i + ai_index)*3 + 1].c_str());
+			if (durablity > 0)
+			{
+				const std::string action = ai[i].TakeAction(tour, atof(raw_data[(i + ai_index)*3].c_str()), durablity, atof(raw_data[(i + ai_index) * 3 + 2].c_str()));
+				PipeConnection::SetAction(i, action[0] - 48, atoi(action.substr(1, static_cast<int>(action.size()) - 1).c_str()));
+				PipeConnection::SetAttack(i, 10);
+			}
+		}
+		tour.erase(tour.begin());
+	}
 }
 
 Game::~Game()

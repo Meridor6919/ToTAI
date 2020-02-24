@@ -5,8 +5,8 @@
 
 class AIobject
 {
-	std::vector<int>car_modifiers;
-	std::vector<std::string>tire_modifiers;
+	std::vector<int>car_params;
+	std::vector<std::string>tire_params;
 	int behaviour;
 
 	double GetParameterScore(double parameter_value, const double max, const double maximum_score);
@@ -16,6 +16,12 @@ class AIobject
 	float EvaluateSpeed(std::string field, const float chance, const bool drift);
 	float TireEffectivness(const std::string &field);
 	float EvaluateSpeed(const std::string &current_field, const float current_speed, const int acceleration_value);
+
+	std::string TakeActionDrifterAI(const std::vector<std::string> & tour, const float current_speed, const float current_durablity, const float current_score);
+	std::string TakeActionAggressiveAI(const std::vector<std::string> & tour, const float current_speed, const float current_durablity, const float current_score);
+	std::string TakeActionBalancedAI(const std::vector<std::string> & tour, const float current_speed, const float current_durablity, const float current_score);
+
+
 public:
 	AIobject();
 	std::string GetName();
@@ -23,5 +29,6 @@ public:
 	int GetTireScore(const std::vector<int>&terrain, const std::vector<std::string>&tire_params);
 	void SetCarAttributes(const std::vector<int>&car_params);
 	void SetTireAttributes(const std::vector<std::string>&tire_params);
+	std::string TakeAction(const std::vector<std::string> & tour, const float current_speed, const float current_durablity, const float current_score);
 };
 

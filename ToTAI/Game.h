@@ -3,6 +3,7 @@
 #include "PipeConnection.h"
 #include <vector>
 #include <time.h>
+#include <thread>
 
 class Game
 {
