@@ -162,6 +162,10 @@ std::string AIobject::TakeActionBalancedAI(const std::vector<std::string> & tour
 {
 	return std::string("015");
 }
+double AIobject::NormalizeScore(double score, double max_local_score, double max_global_score)
+{
+	return (max_global_score - max_local_score + score) / max_global_score;
+}
 AIobject::AIobject()
 {
 	behaviour = rand() % 3;
@@ -191,45 +195,43 @@ std::string AIobject::GetName()
 }
 int AIobject::GetCarScore(const int optimum_max_speed, const std::vector<int>& car_params)
 {
+	//max value - 100000000.0
 	double final_score = 1;
 	switch (behaviour)
 	{
 	case GameValues::BehaviourDrifter:
 		{
-			//max value - 5 000 00
-			final_score *= GetParameterScore(car_params[CarAttributes::max_accelerating], car_params[CarAttributes::max_speed], 10.0);//acceleration
-			final_score *= GetParameterScore(car_params[CarAttributes::max_speed], optimum_max_speed, 5.0);//max_speed
-			final_score *= GetParameterScore(car_params[CarAttributes::max_braking], car_params[CarAttributes::max_speed]/10*9, 2.0);//max_braking
-			final_score *= GetParameterScore(car_params[CarAttributes::max_speed] - car_params[CarAttributes::hand_brake_value], car_params[CarAttributes::max_speed], 10.0) + 0.01;//hand-brake-value
-			final_score *= GetParameterScore(car_params[CarAttributes::durability], car_params[CarAttributes::max_speed]*10, 10.0);//durability
-			final_score *= GetParameterScore(car_params[CarAttributes::drift_mod], 1000, 10.0);//drift_mod
-			final_score *= GetParameterScore(car_params[CarAttributes::visibility], 10, 5.0);//visibility
+			final_score *= NormalizeScore(GetParameterScore(car_params[CarAttributes::max_accelerating], car_params[CarAttributes::max_speed], 6.0), 6.0);//acceleration
+			final_score *= NormalizeScore(GetParameterScore(car_params[CarAttributes::max_speed], optimum_max_speed, 3.0), 3.0);//max_speed
+			final_score *= NormalizeScore(GetParameterScore(car_params[CarAttributes::max_braking], car_params[CarAttributes::max_speed]/10*9, 0.5), 0.5);//max_braking
+			final_score *= NormalizeScore(GetParameterScore(car_params[CarAttributes::max_speed] - car_params[CarAttributes::hand_brake_value], car_params[CarAttributes::max_speed], 9.9),9.9);//hand-brake-value
+			final_score *= NormalizeScore(GetParameterScore(car_params[CarAttributes::durability], car_params[CarAttributes::max_speed]*10, 5.0),5.0);//durability
+			final_score *= NormalizeScore(GetParameterScore(car_params[CarAttributes::drift_mod], 1000, 10.0), 10.0);//drift_mod
+			final_score *= NormalizeScore(GetParameterScore(car_params[CarAttributes::visibility], 10, 2.0),2.0);//visibility
 			break;
 		}
 		case GameValues::BehaviourAggressive:
 		{
-			//max value - 3 037 5
-			final_score *= GetParameterScore(car_params[CarAttributes::max_accelerating], car_params[CarAttributes::max_speed], 150.0);//acceleration
-			final_score *= GetParameterScore(car_params[CarAttributes::max_speed], optimum_max_speed, 15.0);//max_speed
-			final_score *= GetParameterScore(car_params[CarAttributes::max_braking], car_params[CarAttributes::max_speed] / 10 * 9, 1.0);//max_braking
-			final_score *= GetParameterScore(car_params[CarAttributes::hand_brake_value], car_params[CarAttributes::max_speed], 1.0) + 0.01;//hand-brake-value
-			final_score *= GetParameterScore(car_params[CarAttributes::durability], car_params[CarAttributes::max_speed] * 10, 15.0);//durability
-			final_score *= GetParameterScore(car_params[CarAttributes::turn_mod], 1000, 3.0);//turn_mod
-			final_score *= GetParameterScore(car_params[CarAttributes::drift_mod], 1000, 3.0);//drift_mod
-			final_score *= GetParameterScore(car_params[CarAttributes::visibility], 10, 1.0);//visibility
+			final_score *= NormalizeScore(GetParameterScore(car_params[CarAttributes::max_accelerating], car_params[CarAttributes::max_speed], 10.0), 10.0);//acceleration
+			final_score *= NormalizeScore(GetParameterScore(car_params[CarAttributes::max_speed], optimum_max_speed, 6.0), 6.0);//max_speed
+			final_score *= NormalizeScore(GetParameterScore(car_params[CarAttributes::max_braking], car_params[CarAttributes::max_speed] / 10 * 9, 0.5), 0.5);//max_braking
+			final_score *= NormalizeScore(GetParameterScore(car_params[CarAttributes::max_speed] - car_params[CarAttributes::hand_brake_value], car_params[CarAttributes::max_speed], 0.7), 0.7);//hand-brake-value
+			final_score *= NormalizeScore(GetParameterScore(car_params[CarAttributes::durability], car_params[CarAttributes::max_speed] * 10, 8.0), 8.0);//durability
+			final_score *= NormalizeScore(GetParameterScore(car_params[CarAttributes::turn_mod], 1000, 10.0), 10.0);//turn_mod
+			final_score *= NormalizeScore(GetParameterScore(car_params[CarAttributes::drift_mod], 1000, 10.0), 10.0);//drift_mod
+			final_score *= NormalizeScore(GetParameterScore(car_params[CarAttributes::visibility], 10, 2.0), 1.0);//visibility
 			break;
 		}
 		case GameValues::BehaviourBalanced:
 		{
-			//max value - 281 250 0
-			final_score *= GetParameterScore(car_params[CarAttributes::max_accelerating], car_params[CarAttributes::max_speed], 15.0);//acceleration
-			final_score *= GetParameterScore(car_params[CarAttributes::max_speed], optimum_max_speed, 10.0);//max_speed
-			final_score *= GetParameterScore(car_params[CarAttributes::max_braking], car_params[CarAttributes::max_speed] / 10 * 9, 5.0);//max_braking
-			final_score *= GetParameterScore(car_params[CarAttributes::hand_brake_value], car_params[CarAttributes::max_speed], 5.0);//hand-brake-value
-			final_score *= GetParameterScore(car_params[CarAttributes::durability], car_params[CarAttributes::max_speed] * 10, 10.0);//durability
-			final_score *= GetParameterScore(car_params[CarAttributes::turn_mod], 1000, 5.0);//turn_mod
-			final_score *= GetParameterScore(car_params[CarAttributes::drift_mod], 1000, 3.0);//drift_mod
-			final_score *= GetParameterScore(car_params[CarAttributes::visibility], 10, 5.0);//visibility
+			final_score *= NormalizeScore(GetParameterScore(car_params[CarAttributes::max_accelerating], car_params[CarAttributes::max_speed], 6.0), 6.0);//acceleration
+			final_score *= NormalizeScore(GetParameterScore(car_params[CarAttributes::max_speed], optimum_max_speed, 5.0), 5.0);//max_speed
+			final_score *= NormalizeScore(GetParameterScore(car_params[CarAttributes::max_braking], car_params[CarAttributes::max_speed] / 10 * 9, 3.0), 3.0);//max_braking
+			final_score *= NormalizeScore(GetParameterScore(car_params[CarAttributes::max_speed] - car_params[CarAttributes::hand_brake_value], car_params[CarAttributes::max_speed], 3.0), 3.0);//hand-brake-value
+			final_score *= NormalizeScore(GetParameterScore(car_params[CarAttributes::durability], car_params[CarAttributes::max_speed] * 10, 8.0), 7.0);//durability
+			final_score *= NormalizeScore(GetParameterScore(car_params[CarAttributes::turn_mod], 1000, 10.0), 10.0);//turn_mod
+			final_score *= NormalizeScore(GetParameterScore(car_params[CarAttributes::drift_mod], 1000, 10.0), 10.0);//drift_mod
+			final_score *= NormalizeScore(GetParameterScore(car_params[CarAttributes::visibility], 10, 2.0), 2.5);//visibility
 			break;
 		}
 	}
