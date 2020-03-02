@@ -13,9 +13,10 @@ class AIobject
 	double GetProbability(double number_of_tests, double wanted_number);
 	float EvaluateChance(std::string field, const float speed, const bool drift);
 	float CalculateBurning(float value);
-	float EvaluateSpeed(std::string field, const float chance, const bool drift);
+	//from 0 to 100
+	float EvaluateSpeed(std::string field, const float chance_to_fail, const bool drift);
 	float TireEffectivness(const std::string &field);
-	float EvaluateSpeed(const std::string &current_field, const float current_speed, const int acceleration_value);
+	float GetSpeed(const std::string &current_field, const float current_speed, const int acceleration_value);
 
 	std::string TakeActionDrifterAI(const std::vector<std::string> & tour, const float current_speed, const float current_durablity, const float current_score);
 	std::string TakeActionAggressiveAI(const std::vector<std::string> & tour, const float current_speed, const float current_durablity, const float current_score);

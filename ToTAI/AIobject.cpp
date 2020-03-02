@@ -87,7 +87,7 @@ float AIobject::CalculateBurning(float value)
 	result = value * static_cast<float>(level + level * level) / 2.0f;
 	return result / 50.0f;
 }
-float AIobject::EvaluateSpeed(std::string field, const float chance, const bool drift)
+float AIobject::EvaluateSpeed(std::string field, const float chance_to_fail, const bool drift)
 {
 	if (static_cast<int>(field.size()) < 2)
 	{
@@ -97,9 +97,9 @@ float AIobject::EvaluateSpeed(std::string field, const float chance, const bool 
 
 	if (drift)
 	{
-		float result = (2.0f * chance*static_cast<float>(car_params[CarAttributes::drift_mod]) + 10000.0f + 100.0f * static_cast<float>(atof(field.c_str()))) /
+		float result = (2.0f * chance_to_fail*static_cast<float>(car_params[CarAttributes::drift_mod]) + 10000.0f + 100.0f * static_cast<float>(atof(field.c_str()))) /
 			(10000.0f / static_cast<float>(atof(field.c_str())) + 100.0f + static_cast<float>(car_params[CarAttributes::drift_mod]));
-		float secondary_result = (3.0f * chance*static_cast<float>(car_params[CarAttributes::drift_mod]) + 20000.0f + 200.0f * static_cast<float>(atof(field.c_str()))) /
+		float secondary_result = (3.0f * chance_to_fail*static_cast<float>(car_params[CarAttributes::drift_mod]) + 20000.0f + 200.0f * static_cast<float>(atof(field.c_str()))) /
 			(20000.0f / static_cast<float>(atof(field.c_str())) + 200.0f + static_cast<float>(car_params[CarAttributes::drift_mod]));
 
 		if (secondary_result > result)
@@ -111,18 +111,18 @@ float AIobject::EvaluateSpeed(std::string field, const float chance, const bool 
 
 		if (base > 100.0f)
 		{
-			result = 2.0f * chance - 100.0f;
+			result = 2.0f * chance_to_fail - 100.0f;
 		}
 		else if (base < 0.0f)
 		{
-			result = 3.0f * chance;
+			result = 3.0f * chance_to_fail;
 		}
 		return result;
 	}
 	else
 	{
-		float delta = (200.0f + 12.0f * chance)*(200.0f + 12.0f * chance) - 180.0f * chance*chance;
-		float base = (-(200.0f + 12.0f * chance) + sqrt(delta)) / -10.0f*((static_cast<float>(car_params[CarAttributes::turn_mod])) / 100.0f);
+		float delta = (200.0f + 12.0f * chance_to_fail)*(200.0f + 12.0f * chance_to_fail) - 180.0f * chance_to_fail*chance_to_fail;
+		float base = (-(200.0f + 12.0f * chance_to_fail) + sqrt(delta)) / -10.0f*((static_cast<float>(car_params[CarAttributes::turn_mod])) / 100.0f);
 		return static_cast<float>(atof(field.c_str())) + base / (100.0f / static_cast<float>(atof(field.c_str())) + 1.0f);
 	}
 }
@@ -146,7 +146,7 @@ float AIobject::TireEffectivness(const std::string &field)
 	}
 	return static_cast<float>(result);
 }
-float AIobject::EvaluateSpeed(const std::string &current_field, const float current_speed, const int acceleration_value)
+float AIobject::GetSpeed(const std::string &current_field, const float current_speed, const int acceleration_value)
 {
 	return (current_speed + static_cast<float>(acceleration_value) * (0.9f + 0.2f*TireEffectivness(current_field))) * 0.9f;
 }
@@ -156,6 +156,17 @@ std::string AIobject::TakeActionDrifterAI(const std::vector<std::string> & tour,
 }
 std::string AIobject::TakeActionAggressiveAI(const std::vector<std::string> & tour, const float current_speed, const float current_durablity, const float current_score)
 {
+	/*
+	int max_speed = INT_MAX;
+	for (int i = 0; i < car_params[CarAttributes::visibility]; ++i)
+	{
+		if (static_cast<int>(tour[i].size()) > 1)
+		{
+			bool drift = rand() % 2;
+			float estimated_speed = EvaluateSpeed(tour[i], 5.0f, drift);
+		}
+	}
+	*/
 	return std::string("040");
 }
 std::string AIobject::TakeActionBalancedAI(const std::vector<std::string> & tour, const float current_speed, const float current_durablity, const float current_score)
