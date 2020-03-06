@@ -22,7 +22,7 @@ class AIobject
 	std::string TakeActionAggressiveAI(const std::vector<std::string> & tour, const float current_speed, const float current_durablity, const float current_score);
 	std::string TakeActionBalancedAI(const std::vector<std::string> & tour, const float current_speed, const float current_durablity, const float current_score);
 	double NormalizeScore(double score, double max_local_score, double max_global_score = 10.0);
-
+	double SafeSpeed(const std::vector<std::string> &tour, char turn_behaviour);
 
 public:
 	AIobject();

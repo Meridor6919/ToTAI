@@ -177,6 +177,29 @@ double AIobject::NormalizeScore(double score, double max_local_score, double max
 {
 	return (max_global_score - max_local_score + score) / max_global_score;
 }
+double AIobject::SafeSpeed(const std::vector<std::string>& tour, char turn_behaviour)
+{
+	double return_value = car_params[CarAttributes::max_speed] * 1.25;
+	const double max_braking_value = car_params[CarAttributes::max_braking] > car_params[CarAttributes::hand_brake_value] ? car_params[CarAttributes::max_braking] : car_params[CarAttributes::hand_brake_value];
+	double max_brake = 0.0f;
+	for (int i = 1; i < car_params[CarAttributes::visibility]; ++i)
+	{
+		if (static_cast<int>(tour[i].size()) > 1)//turn
+		{
+			const double local_braking_value = (turn_behaviour & 1) ? car_params[CarAttributes::max_braking] : car_params[CarAttributes::hand_brake_value];
+			max_brake = (max_brake + local_braking_value* (0.9f + 0.2f*TireEffectivness(tour[i]))) / 0.9;
+			if (return_value > atof(tour[i].substr(1, static_cast<int>(tour[i].size()) - 1).c_str()))
+			{
+				return_value = atof(tour[i].substr(1, static_cast<int>(tour[i].size()) - 1).c_str());
+			}
+		}
+		else
+		{
+			max_brake = (max_brake + max_braking_value * (0.9f + 0.2f*TireEffectivness(tour[i]))) / 0.9;
+		}
+	}
+	return return_value;
+}
 AIobject::AIobject()
 {
 	behaviour = rand() % 3;
