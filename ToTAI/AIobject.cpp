@@ -182,7 +182,7 @@ double AIobject::SafeSpeed(const std::vector<std::string>& tour, char turn_behav
 	double return_value = car_params[CarAttributes::max_speed] * 1.25;
 	const double max_braking_value = car_params[CarAttributes::max_braking] > car_params[CarAttributes::hand_brake_value] ? car_params[CarAttributes::max_braking] : car_params[CarAttributes::hand_brake_value];
 	double max_brake = 0.0f;
-	for (int i = 1; i < car_params[CarAttributes::visibility]; ++i)
+	for (int i = 1; i < car_params[CarAttributes::visibility] && i < static_cast<int>(tour.size()); ++i)
 	{
 		if (static_cast<int>(tour[i].size()) > 1)//turn
 		{
