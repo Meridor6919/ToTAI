@@ -150,6 +150,18 @@ float AIobject::GetSpeed(const std::string &current_field, const float current_s
 {
 	return (current_speed + static_cast<float>(acceleration_value) * (0.9f + 0.2f*TireEffectivness(current_field))) * 0.9f;
 }
+int AIobject::AttackAggressiveAI(const std::vector<std::string>& tour, const std::vector<std::string>& data)
+{
+	return 10;
+}
+int AIobject::AttackDrifterAI(const std::vector<std::string>& tour, const std::vector<std::string>& data)
+{
+	return 10;
+}
+int AIobject::AttackBalancedAI(const std::vector<std::string>& tour, const std::vector<std::string>& data)
+{
+	return 10;
+}
 std::string AIobject::TakeActionDrifterAI(const std::vector<std::string> & tour, const float current_speed, const float current_durablity, const float current_score)
 {
 	return std::string("010");
@@ -324,6 +336,28 @@ std::string AIobject::TakeAction(const std::vector<std::string> & tour, const fl
 		}
 	}
 	return "5";
+}
+int AIobject::Attack(const std::vector<std::string>& tour, const std::vector<std::string>& data)
+{
+	switch (behaviour)
+	{
+	case GameValues::BehaviourAggressive:
+	{
+		return AttackAggressiveAI(tour, data);
+		break;
+	}
+	case GameValues::BehaviourDrifter:
+	{
+		return AttackDrifterAI(tour, data);
+		break;
+	}
+	case GameValues::BehaviourBalanced:
+	{
+		return AttackBalancedAI(tour, data);
+		break;
+	}
+	}
+	return 10;
 }
 
 

@@ -144,7 +144,7 @@ void Game::RacePhase()
 			{
 				const std::string action = ai[i].TakeAction(tour, atof(raw_data[(i + ai_index)*3].c_str()), durablity, atof(raw_data[(i + ai_index) * 3 + 2].c_str()));
 				PipeConnection::SetAction(i, action[0] - 48, atoi(action.substr(1, static_cast<int>(action.size()) - 1).c_str()));
-				PipeConnection::SetAttack(i, 10);
+				PipeConnection::SetAttack(i, ai[i].Attack(tour, raw_data));
 			}
 		}
 		tour.erase(tour.begin());
