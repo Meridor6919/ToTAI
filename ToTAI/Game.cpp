@@ -77,7 +77,6 @@ void Game::GetTires()
 	delete best_score;
 	delete best_index;
 }
-
 int Game::GetMaxSpeed(const std::vector<std::string>& tour)
 {
 	double max_speed = 0.0;
@@ -102,7 +101,6 @@ int Game::GetMaxSpeed(const std::vector<std::string>& tour)
 	return static_cast<int>(max_speed);
 	
 }
-
 Game::Game()
 {
 	srand(static_cast<unsigned int>(time(0)));
@@ -116,14 +114,12 @@ Game::Game()
 		ai.push_back(AIobject());
 	}
 }
-
 void Game::LobbyPhase()
 {
 	GetNames();
 	GetCars();
 	GetTires();
 }
-
 void Game::RacePhase()
 {
 	while (static_cast<int>(tour.size()))
@@ -144,13 +140,12 @@ void Game::RacePhase()
 			{
 				const std::string action = ai[i].TakeAction(tour, atof(raw_data[(i + ai_index)*3].c_str()), durablity, atof(raw_data[(i + ai_index) * 3 + 2].c_str()));
 				PipeConnection::SetAction(i, action[0] - 48, atoi(action.substr(1, static_cast<int>(action.size()) - 1).c_str()));
-				PipeConnection::SetAttack(i, ai[i].Attack(tour, raw_data));
+				PipeConnection::SetAttack(i, ai[i].Attack(tour, i, raw_data));
 			}
 		}
 		tour.erase(tour.begin());
 	}
 }
-
 Game::~Game()
 {
 	PipeConnection::Exit();

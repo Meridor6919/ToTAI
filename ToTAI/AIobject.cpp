@@ -150,17 +150,54 @@ float AIobject::GetSpeed(const std::string &current_field, const float current_s
 {
 	return (current_speed + static_cast<float>(acceleration_value) * (0.9f + 0.2f*TireEffectivness(current_field))) * 0.9f;
 }
-int AIobject::AttackAggressiveAI(const std::vector<std::string>& tour, const std::vector<std::string>& data)
+float AIobject::GetScore(const std::vector<std::string> &raw_data, int id)
 {
-	return 10;
+	return atof(raw_data[id*3 + 2].c_str());
 }
-int AIobject::AttackDrifterAI(const std::vector<std::string>& tour, const std::vector<std::string>& data)
+float AIobject::GetDurability(const std::vector<std::string>& raw_data, int id)
 {
-	return 10;
+	return atof(raw_data[id * 3 + 1].c_str());
 }
-int AIobject::AttackBalancedAI(const std::vector<std::string>& tour, const std::vector<std::string>& data)
+int AIobject::AttackAggressiveAI(const std::vector<std::string>& tour, int id, const std::vector<std::string>& data)
 {
-	return 10;
+	const float this_score = GetScore(data, id);
+	int selected_id = 10;
+	float hi_score = this_score + GameValues::attack_backward_distance;
+	for (int i = 0; i < static_cast<int>(data.size()); ++i)
+	{
+		if (id != i)
+		{
+			const float local_score = GetScore(data, i);
+			if (this_score - GameValues::attack_forward_distance < local_score && this_score + GameValues::attack_backward_distance > local_score && local_score < hi_score)
+			{
+				selected_id = i;
+				hi_score = local_score;
+			}
+		}
+	}
+	return selected_id;
+}
+int AIobject::AttackDrifterAI(const std::vector<std::string>& tour, int id, const std::vector<std::string>& data)
+{
+	if (static_cast<int>(tour[0].size()) > 1 || static_cast<int>(tour[1].size()) > 1)
+	{
+		return 10;
+	}
+	else
+	{
+		return AttackAggressiveAI(tour, id, data);
+	}
+}
+int AIobject::AttackBalancedAI(const std::vector<std::string>& tour, int id, const std::vector<std::string>& data)
+{
+	if (GetDurability(data, id) < static_cast<float>(car_params[CarAttributes::durability])*0.33333f)
+	{
+		return 10;
+	}
+	else
+	{
+		return AttackDrifterAI(tour, id, data);
+	}
 }
 std::string AIobject::TakeActionDrifterAI(const std::vector<std::string> & tour, const float current_speed, const float current_durablity, const float current_score)
 {
@@ -245,7 +282,7 @@ int AIobject::GetCarScore(const int optimum_max_speed, const std::vector<int>& c
 	double final_score = 1;
 	switch (behaviour)
 	{
-	case GameValues::BehaviourDrifter:
+		case GameValues::Behaviour::Drifter:
 		{
 			final_score *= NormalizeScore(GetParameterScore(car_params[CarAttributes::max_accelerating], car_params[CarAttributes::max_speed], 6.0), 6.0);//acceleration
 			final_score *= NormalizeScore(GetParameterScore(car_params[CarAttributes::max_speed], optimum_max_speed, 3.0), 3.0);//max_speed
@@ -256,7 +293,7 @@ int AIobject::GetCarScore(const int optimum_max_speed, const std::vector<int>& c
 			final_score *= NormalizeScore(GetParameterScore(car_params[CarAttributes::visibility], 10, 2.0),2.0);//visibility
 			break;
 		}
-		case GameValues::BehaviourAggressive:
+		case GameValues::Behaviour::Aggressive:
 		{
 			final_score *= NormalizeScore(GetParameterScore(car_params[CarAttributes::max_accelerating], car_params[CarAttributes::max_speed], 10.0), 10.0);//acceleration
 			final_score *= NormalizeScore(GetParameterScore(car_params[CarAttributes::max_speed], optimum_max_speed, 6.0), 6.0);//max_speed
@@ -268,7 +305,7 @@ int AIobject::GetCarScore(const int optimum_max_speed, const std::vector<int>& c
 			final_score *= NormalizeScore(GetParameterScore(car_params[CarAttributes::visibility], 10, 2.0), 1.0);//visibility
 			break;
 		}
-		case GameValues::BehaviourBalanced:
+		case GameValues::Behaviour::Balanced:
 		{
 			final_score *= NormalizeScore(GetParameterScore(car_params[CarAttributes::max_accelerating], car_params[CarAttributes::max_speed], 6.0), 6.0);//acceleration
 			final_score *= NormalizeScore(GetParameterScore(car_params[CarAttributes::max_speed], optimum_max_speed, 5.0), 5.0);//max_speed
@@ -319,17 +356,17 @@ std::string AIobject::TakeAction(const std::vector<std::string> & tour, const fl
 {
 	switch (behaviour)
 	{
-		case GameValues::BehaviourAggressive:
+		case GameValues::Behaviour::Aggressive:
 		{
 			return TakeActionAggressiveAI(tour, current_speed, current_durablity, current_score);
 			break;
 		}
-		case GameValues::BehaviourDrifter:
+		case GameValues::Behaviour::Drifter:
 		{
 			return TakeActionDrifterAI(tour, current_speed, current_durablity, current_score);
 			break;
 		}
-		case GameValues::BehaviourBalanced:
+		case GameValues::Behaviour::Balanced:
 		{
 			return TakeActionBalancedAI(tour, current_speed, current_durablity, current_score);
 			break;
@@ -337,23 +374,23 @@ std::string AIobject::TakeAction(const std::vector<std::string> & tour, const fl
 	}
 	return "5";
 }
-int AIobject::Attack(const std::vector<std::string>& tour, const std::vector<std::string>& data)
+int AIobject::Attack(const std::vector<std::string>& tour, int id, const std::vector<std::string>& data)
 {
 	switch (behaviour)
 	{
-	case GameValues::BehaviourAggressive:
+	case GameValues::Behaviour::Aggressive:
 	{
-		return AttackAggressiveAI(tour, data);
+		return AttackAggressiveAI(tour, id, data);
 		break;
 	}
-	case GameValues::BehaviourDrifter:
+	case GameValues::Behaviour::Drifter:
 	{
-		return AttackDrifterAI(tour, data);
+		return AttackDrifterAI(tour, id, data);
 		break;
 	}
-	case GameValues::BehaviourBalanced:
+	case GameValues::Behaviour::Balanced:
 	{
-		return AttackBalancedAI(tour, data);
+		return AttackBalancedAI(tour, id, data);
 		break;
 	}
 	}

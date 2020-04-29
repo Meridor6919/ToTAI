@@ -17,16 +17,17 @@ class AIobject
 	float EvaluateSpeed(std::string field, const float chance_to_fail, const bool drift);
 	float TireEffectivness(const std::string &field);
 	float GetSpeed(const std::string &current_field, const float current_speed, const int acceleration_value);
+	float GetScore(const std::vector<std::string> &raw_data, int id);
+	float GetDurability(const std::vector<std::string> &raw_data, int id);
 
-	int AttackAggressiveAI(const std::vector<std::string> & tour, const std::vector<std::string> &data);
-	int AttackDrifterAI(const std::vector<std::string> & tour, const std::vector<std::string> &data);
-	int AttackBalancedAI(const std::vector<std::string> & tour, const std::vector<std::string> &data);
+	int AttackAggressiveAI(const std::vector<std::string> & tour, int id, const std::vector<std::string> &data);
+	int AttackDrifterAI(const std::vector<std::string> & tour, int id, const std::vector<std::string> &data);
+	int AttackBalancedAI(const std::vector<std::string> & tour, int id, const std::vector<std::string> &data);
 	std::string TakeActionDrifterAI(const std::vector<std::string> & tour, const float current_speed, const float current_durablity, const float current_score);
 	std::string TakeActionAggressiveAI(const std::vector<std::string> & tour, const float current_speed, const float current_durablity, const float current_score);
 	std::string TakeActionBalancedAI(const std::vector<std::string> & tour, const float current_speed, const float current_durablity, const float current_score);
 	double NormalizeScore(double score, double max_local_score, double max_global_score = 10.0);
 	double SafeSpeed(const std::vector<std::string> &tour, char turn_behaviour);
-
 public:
 	AIobject();
 	std::string GetName();
@@ -35,6 +36,6 @@ public:
 	void SetCarAttributes(const std::vector<int>&car_params);
 	void SetTireAttributes(const std::vector<std::string>&tire_params);
 	std::string TakeAction(const std::vector<std::string> & tour, const float current_speed, const float current_durablity, const float current_score);
-	int Attack(const std::vector<std::string> & tour, const std::vector<std::string> &data);
+	int Attack(const std::vector<std::string> & tour, int id, const std::vector<std::string> &data);
 };
 

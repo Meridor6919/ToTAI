@@ -20,12 +20,14 @@ namespace ConnectionCodes{
 	};
 }
 namespace GameValues {
-	enum Values {
-		BehaviourDrifter,
-		BehaviourAggressive,
-		BehaviourBalanced,
-		TerrainTypes = 6,
+	enum Behaviour {
+		Drifter,
+		Aggressive,
+		Balanced
 	};
+	const int TerrainTypes = 6;
+	const int attack_forward_distance = 4;
+	const int attack_backward_distance = 6;
 }
 namespace CarAttributes
 {
