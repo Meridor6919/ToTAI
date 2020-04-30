@@ -4,7 +4,7 @@ void Game::GetNames()
 {
 	for (int i = 0; i < number_of_instances; ++i)
 	{
-		PipeConnection::SetName(i, ai[i].GetName());
+		PipeConnection::SetName(i, ai[i].GenerateName());
 	}
 }
 void Game::GetCars()
@@ -138,7 +138,8 @@ void Game::RacePhase()
 			const double durablity = atof(raw_data[(i + ai_index)*3 + 1].c_str());
 			if (durablity > 0)
 			{
-				const std::string action = ai[i].TakeAction(tour, atof(raw_data[(i + ai_index)*3].c_str()), durablity, atof(raw_data[(i + ai_index) * 3 + 2].c_str()));
+				ai[i].SetRaceAttributes(i + ai_index, raw_data);
+				const std::string action = ai[i].TakeAction(tour);
 				PipeConnection::SetAction(i, action[0] - 48, atoi(action.substr(1, static_cast<int>(action.size()) - 1).c_str()));
 				PipeConnection::SetAttack(i, ai[i].Attack(tour, i, raw_data));
 			}

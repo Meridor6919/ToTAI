@@ -28,66 +28,66 @@ double AIobject::GetProbability(double number_of_tests, double wanted_number)
 	}
 	return result / 2;
 }
-float AIobject::EvaluateChance(std::string field, const float speed, const bool drift)
+double AIobject::EvaluateChance(std::string field, const double speed, const bool drift)
 {
 	if (static_cast<int>(field.size()) < 2)
 	{
-		return 0.0f;
+		return 0.0;
 	}
 	field.erase(0, 1);
-	float base = (speed / static_cast<float>(atof(field.c_str())) - 1) * 100.0f + speed - static_cast<float>(atof(field.c_str()));
+	float base = (speed / atof(field.c_str()) - 1) * 100.0 + speed - atof(field.c_str());
 
-	if (base < 0.0f)
+	if (base < 0.0)
 	{
-		base = 0.0f;
+		base = 0.0;
 	}
 	if (drift)
 	{
-		base /= static_cast<float>(car_params[CarAttributes::drift_mod]) / 100.0f;
-		if (base > 100.0f)
+		base /= static_cast<double>(car_params[CarAttributes::drift_mod]) / 100.0;
+		if (base > 100.0)
 		{
-			base = 100.0f;
+			base = 100.0;
 		}
-		float result = (speed + base) / 2.0f;
+		float result = (speed + base) / 2.0;
 		if (base < speed)
 		{
-			result = (speed + base * 2.0f) / 3.0f;
+			result = (speed + base * 2.0) / 3.0;
 		}
-		if (result > 100.0f)
+		if (result > 100.0)
 		{
-			result = 100.0f;
+			result = 100.0;
 		}
 		return result;
 	}
 	else
 	{
-		base /= static_cast<float>(car_params[CarAttributes::turn_mod]) / 100.0f;
-		if (base > 100.0f)
+		base /= static_cast<double>(car_params[CarAttributes::turn_mod]) / 100.0;
+		if (base > 100.0)
 		{
-			base = 100.0f;
+			base = 100.0;
 		}
-		return (sqrt(base * -base + 200.0f * base) + 2.0f * base) / 3.0f;
+		return (sqrt(base * -base + 200.0 * base) + 2.0 * base) / 3.0;
 	}
 }
-float AIobject::CalculateBurning(float value)
+double AIobject::CalculateBurning(double value)
 {
-	float raw = value / static_cast<float>(car_params[CarAttributes::max_speed]);
-	float result = 0.0f;
+	double raw = value / static_cast<double>(car_params[CarAttributes::max_speed]);
+	double result = 0.0;
 
-	if (raw < 0.0f)
+	if (raw < 0.0)
 	{
-		return 0.0f;
+		return 0.0;
 	}
-	if (raw > 0.25f)
+	if (raw > 0.25)
 	{
-		raw = 0.25f;
-		value = static_cast<float>(car_params[CarAttributes::max_speed]) * 0.25f;
+		raw = 0.25;
+		value = static_cast<double>(car_params[CarAttributes::max_speed]) * 0.25;
 	}
-	int level = static_cast<int>(raw*20.0f) + 10;
-	result = value * static_cast<float>(level + level * level) / 2.0f;
-	return result / 50.0f;
+	int level = static_cast<int>(raw*20.0) + 10;
+	result = value * static_cast<double>(level + level * level) / 2.0;
+	return result / 50.0;
 }
-float AIobject::EvaluateSpeed(std::string field, const float chance_to_fail, const bool drift)
+double AIobject::EvaluateSpeed(std::string field, const double chance_to_fail, const bool drift)
 {
 	if (static_cast<int>(field.size()) < 2)
 	{
@@ -97,36 +97,36 @@ float AIobject::EvaluateSpeed(std::string field, const float chance_to_fail, con
 
 	if (drift)
 	{
-		float result = (2.0f * chance_to_fail*static_cast<float>(car_params[CarAttributes::drift_mod]) + 10000.0f + 100.0f * static_cast<float>(atof(field.c_str()))) /
-			(10000.0f / static_cast<float>(atof(field.c_str())) + 100.0f + static_cast<float>(car_params[CarAttributes::drift_mod]));
-		float secondary_result = (3.0f * chance_to_fail*static_cast<float>(car_params[CarAttributes::drift_mod]) + 20000.0f + 200.0f * static_cast<float>(atof(field.c_str()))) /
-			(20000.0f / static_cast<float>(atof(field.c_str())) + 200.0f + static_cast<float>(car_params[CarAttributes::drift_mod]));
+		double result = (2.0 * chance_to_fail*static_cast<double>(car_params[CarAttributes::drift_mod]) + 10000.0 + 100.0 * atof(field.c_str())) /
+			(10000.0 / atof(field.c_str()) + 100.0 + static_cast<double>(car_params[CarAttributes::drift_mod]));
+		double secondary_result = (3.0 * chance_to_fail*static_cast<double>(car_params[CarAttributes::drift_mod]) + 20000.0 + 200.0 * atof(field.c_str())) /
+			(20000.0 / atof(field.c_str()) + 200.0 + static_cast<double>(car_params[CarAttributes::drift_mod]));
 
 		if (secondary_result > result)
 		{
 			result = secondary_result;
 		}
-		float base = ((result / static_cast<float>(atof(field.c_str())) - 1.0f) * 100.0f + result - static_cast<float>(atof(field.c_str()))) /
-			(static_cast<float>(car_params[CarAttributes::drift_mod]) / 100.0f);
+		float base = ((result / atof(field.c_str()) - 1.0) * 100.0 + result - atof(field.c_str())) /
+			(static_cast<double>(car_params[CarAttributes::drift_mod]) / 100.0);
 
-		if (base > 100.0f)
+		if (base > 100.0)
 		{
-			result = 2.0f * chance_to_fail - 100.0f;
+			result = 2.0 * chance_to_fail - 100.0;
 		}
-		else if (base < 0.0f)
+		else if (base < 0.0)
 		{
-			result = 3.0f * chance_to_fail;
+			result = 3.0 * chance_to_fail;
 		}
 		return result;
 	}
 	else
 	{
-		float delta = (200.0f + 12.0f * chance_to_fail)*(200.0f + 12.0f * chance_to_fail) - 180.0f * chance_to_fail*chance_to_fail;
-		float base = (-(200.0f + 12.0f * chance_to_fail) + sqrt(delta)) / -10.0f*((static_cast<float>(car_params[CarAttributes::turn_mod])) / 100.0f);
-		return static_cast<float>(atof(field.c_str())) + base / (100.0f / static_cast<float>(atof(field.c_str())) + 1.0f);
+		double delta = (200.0 + 12.0 * chance_to_fail)*(200.0 + 12.0 * chance_to_fail) - 180.0 * chance_to_fail*chance_to_fail;
+		double base = (-(200.0 + 12.0 * chance_to_fail) + sqrt(delta)) / -10.0*((static_cast<double>(car_params[CarAttributes::turn_mod])) / 100.0);
+		return atof(field.c_str()) + base / (100.0 / atof(field.c_str()) + 1.0);
 	}
 }
-float AIobject::TireEffectivness(const std::string &field)
+double AIobject::TireEffectivness(const std::string &field)
 {
 	const int terrain = field[0] - 48;
 	double x, y;
@@ -144,31 +144,22 @@ float AIobject::TireEffectivness(const std::string &field)
 	{
 		result += GetProbability(y, j);
 	}
-	return static_cast<float>(result);
+	return result;
 }
-float AIobject::GetSpeed(const std::string &current_field, const float current_speed, const int acceleration_value)
+double AIobject::CalculateSpeed(const std::string &current_field, const double speed, const int acceleration_value)
 {
-	return (current_speed + static_cast<float>(acceleration_value) * (0.9f + 0.2f*TireEffectivness(current_field))) * 0.9f;
-}
-float AIobject::GetScore(const std::vector<std::string> &raw_data, int id)
-{
-	return atof(raw_data[id*3 + 2].c_str());
-}
-float AIobject::GetDurability(const std::vector<std::string>& raw_data, int id)
-{
-	return atof(raw_data[id * 3 + 1].c_str());
+	return (speed + static_cast<double>(acceleration_value) * (0.9 + 0.2*TireEffectivness(current_field))) * 0.9;
 }
 int AIobject::AttackAggressiveAI(const std::vector<std::string>& tour, int id, const std::vector<std::string>& data)
 {
-	const float this_score = GetScore(data, id);
 	int selected_id = 10;
-	float hi_score = this_score + GameValues::attack_backward_distance;
+	float hi_score = score + GameValues::attack_backward_distance;
 	for (int i = 0; i < static_cast<int>(data.size()); ++i)
 	{
 		if (id != i)
 		{
-			const float local_score = GetScore(data, i);
-			if (this_score - GameValues::attack_forward_distance < local_score && this_score + GameValues::attack_backward_distance > local_score && local_score < hi_score)
+			const double local_score = atof(data[i * 3 + 2].c_str());
+			if (score - GameValues::attack_forward_distance < local_score && score + GameValues::attack_backward_distance > local_score && local_score < hi_score)
 			{
 				selected_id = i;
 				hi_score = local_score;
@@ -190,7 +181,7 @@ int AIobject::AttackDrifterAI(const std::vector<std::string>& tour, int id, cons
 }
 int AIobject::AttackBalancedAI(const std::vector<std::string>& tour, int id, const std::vector<std::string>& data)
 {
-	if (GetDurability(data, id) < static_cast<float>(car_params[CarAttributes::durability])*0.33333f)
+	if (durability < static_cast<float>(car_params[CarAttributes::durability])*0.33333f)
 	{
 		return 10;
 	}
@@ -199,11 +190,11 @@ int AIobject::AttackBalancedAI(const std::vector<std::string>& tour, int id, con
 		return AttackDrifterAI(tour, id, data);
 	}
 }
-std::string AIobject::TakeActionDrifterAI(const std::vector<std::string> & tour, const float current_speed, const float current_durablity, const float current_score)
+std::string AIobject::TakeActionDrifterAI(const std::vector<std::string> & tour)
 {
 	return std::string("010");
 }
-std::string AIobject::TakeActionAggressiveAI(const std::vector<std::string> & tour, const float current_speed, const float current_durablity, const float current_score)
+std::string AIobject::TakeActionAggressiveAI(const std::vector<std::string> & tour)
 {
 	/*
 	int max_speed = INT_MAX;
@@ -218,13 +209,13 @@ std::string AIobject::TakeActionAggressiveAI(const std::vector<std::string> & to
 	*/
 	return std::string("040");
 }
-std::string AIobject::TakeActionBalancedAI(const std::vector<std::string> & tour, const float current_speed, const float current_durablity, const float current_score)
+std::string AIobject::TakeActionBalancedAI(const std::vector<std::string> & tour)
 {
 	return std::string("015");
 }
-double AIobject::NormalizeScore(double score, double max_local_score, double max_global_score)
+double AIobject::NormalizeScore(double value, double max_local_score, double max_global_score)
 {
-	return (max_global_score - max_local_score + score) / max_global_score;
+	return (max_global_score - max_local_score + value) / max_global_score;
 }
 double AIobject::SafeSpeed(const std::vector<std::string>& tour, char turn_behaviour)
 {
@@ -244,7 +235,7 @@ double AIobject::SafeSpeed(const std::vector<std::string>& tour, char turn_behav
 		}
 		else
 		{
-			max_brake = (max_brake + max_braking_value * (0.9f + 0.2f*TireEffectivness(tour[i]))) / 0.9;
+			max_brake = (max_brake + max_braking_value * (0.9 + 0.2*TireEffectivness(tour[i]))) / 0.9;
 		}
 	}
 	return return_value;
@@ -253,7 +244,7 @@ AIobject::AIobject()
 {
 	behaviour = rand() % 3;
 }
-std::string AIobject::GetName()
+std::string AIobject::GenerateName()
 {
 	static std::vector<std::vector<const char*>> names = { { "Mark Driver", "Isao Fujimoto", "Miguela Aguela", "Hans Ufner", "Igor Belov", "Andrew Anderson", "Jane Turning", "Sam Samson", "Ed Thompson", "Barbara Hudson",
 													"Frank Sharpe", "Alan Robinson", "Paul Reynolds", "Armand Buchard", "Leon Guerin", "Franz Geisler", "Rudi Schultz", "Schultz Vogel", "Tatsuo Okabe", "Yasuaki Tanikawa",
@@ -280,6 +271,7 @@ int AIobject::GetCarScore(const int optimum_max_speed, const std::vector<int>& c
 {
 	//max value - 100000000.0
 	double final_score = 1;
+
 	switch (behaviour)
 	{
 		case GameValues::Behaviour::Drifter:
@@ -342,7 +334,11 @@ int AIobject::GetTireScore(const std::vector<int>& terrain, const std::vector<st
 			points += GetProbability(y, j) * terrain[i];
 		}
 	}
-	return static_cast<int>(points*100.0f);
+	return static_cast<int>(points*100.0);
+}
+double AIobject::GetScore()
+{
+	return this->score;
 }
 void AIobject::SetCarAttributes(const std::vector<int>& car_params)
 {
@@ -352,23 +348,29 @@ void AIobject::SetTireAttributes(const std::vector<std::string>& tire_params)
 {
 	this->tire_params = tire_params;
 }
-std::string AIobject::TakeAction(const std::vector<std::string> & tour, const float current_speed, const float current_durablity, const float current_score)
+void AIobject::SetRaceAttributes(const int id, const std::vector<std::string>& data)
+{
+	this->current_speed = atof(data[id * 3].c_str());
+	this->durability = atof(data[id * 3 + 1].c_str());
+	this->score = atof(data[id * 3 + 2].c_str());
+}
+std::string AIobject::TakeAction(const std::vector<std::string> & tour)
 {
 	switch (behaviour)
 	{
 		case GameValues::Behaviour::Aggressive:
 		{
-			return TakeActionAggressiveAI(tour, current_speed, current_durablity, current_score);
+			return TakeActionAggressiveAI(tour);
 			break;
 		}
 		case GameValues::Behaviour::Drifter:
 		{
-			return TakeActionDrifterAI(tour, current_speed, current_durablity, current_score);
+			return TakeActionDrifterAI(tour);
 			break;
 		}
 		case GameValues::Behaviour::Balanced:
 		{
-			return TakeActionBalancedAI(tour, current_speed, current_durablity, current_score);
+			return TakeActionBalancedAI(tour);
 			break;
 		}
 	}
