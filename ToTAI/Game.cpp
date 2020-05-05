@@ -4,12 +4,12 @@ void Game::GetNames()
 {
 	for (int i = 0; i < number_of_instances; ++i)
 	{
-		PipeConnection::SetName(i, ai[i].GenerateName());
+		pipe_connection->SetName(i, ai[i].GenerateName());
 	}
 }
 void Game::GetCars()
 {
-	const std::vector<std::string> car_names = PipeConnection::GetCarNames();
+	const std::vector<std::string> car_names = pipe_connection->GetCarNames();
 	int *best_score = new int[number_of_instances];
 	int *best_index = new int[number_of_instances];
 	for (int i = 0; i < number_of_instances; ++i)
@@ -20,7 +20,7 @@ void Game::GetCars()
 	const int max_speed = GetMaxSpeed(tour);
 	for (int i = 0; i < static_cast<int>(car_names.size()); ++i)
 	{
-		const std::vector<int> car_params = PipeConnection::GetCarParams(car_names[i]);
+		const std::vector<int> car_params = pipe_connection->GetCarParams(car_names[i]);
 		for (int j = 0; j < number_of_instances; ++j)
 		{
 			int score = ai[j].GetCarScore(max_speed, car_params);
@@ -33,15 +33,15 @@ void Game::GetCars()
 	}
 	for (int i = 0; i < number_of_instances; ++i)
 	{
-		ai[i].SetCarAttributes(PipeConnection::GetCarParams(car_names[best_index[i]]));
-		PipeConnection::SetCar(i, car_names[best_index[i]]);
+		ai[i].SetCarAttributes(pipe_connection->GetCarParams(car_names[best_index[i]]));
+		pipe_connection->SetCar(i, car_names[best_index[i]]);
 	}
 	delete best_score;
 	delete best_index;
 }
 void Game::GetTires()
 {
-	const std::vector<std::string> tire_names = PipeConnection::GetTireNames();
+	const std::vector<std::string> tire_names = pipe_connection->GetTireNames();
 	int *best_score = new int[number_of_instances];
 	int *best_index = new int[number_of_instances];
 	for (int i = 0; i < number_of_instances; ++i)
@@ -58,7 +58,7 @@ void Game::GetTires()
 
 	for (int i = 0; i < static_cast<int>(tire_names.size()); ++i)
 	{
-		const std::vector<std::string> car_params = PipeConnection::GetTireParams(tire_names[i]);
+		const std::vector<std::string> car_params = pipe_connection->GetTireParams(tire_names[i]);
 		for (int j = 0; j < number_of_instances; ++j)
 		{
 			int score = ai[j].GetTireScore(terrain, car_params);
@@ -71,8 +71,8 @@ void Game::GetTires()
 	}
 	for (int i = 0; i < number_of_instances; ++i)
 	{
-		ai[i].SetTireAttributes(PipeConnection::GetTireParams(tire_names[best_index[i]]));
-		PipeConnection::SetTires(i, tire_names[best_index[i]]);
+		ai[i].SetTireAttributes(pipe_connection->GetTireParams(tire_names[best_index[i]]));
+		pipe_connection->SetTires(i, tire_names[best_index[i]]);
 	}
 	delete best_score;
 	delete best_index;
@@ -104,11 +104,12 @@ int Game::GetMaxSpeed(const std::vector<std::string>& tour)
 Game::Game()
 {
 	srand(static_cast<unsigned int>(time(0)));
-	PipeConnection::Start();
-	const std::pair<int, int> init = PipeConnection::GetInit();
+	pipe_connection = std::make_unique<PipeConnection>();
+	pipe_connection->Start();
+	const std::pair<int, int> init = pipe_connection->GetInit();
 	number_of_instances = init.first;
 	number_of_all_participants = init.second;
-	tour = PipeConnection::GetTour();
+	tour = pipe_connection->GetTour();
 	for (int i = 0; i < number_of_instances; ++i)
 	{
 		ai.push_back(AIobject());
@@ -127,12 +128,12 @@ void Game::RacePhase()
 		const int ai_index = number_of_all_participants - number_of_instances;
 		for (int i = 0; i < number_of_instances; ++i)
 		{
-			while (!PipeConnection::NewTurn(i))
+			while (!pipe_connection->NewTurn(i))
 			{
 				std::this_thread::sleep_for(std::chrono::milliseconds(20));
 			}
 		}
-		const std::vector<std::string> raw_data = PipeConnection::GetAllAtributes(number_of_all_participants);
+		const std::vector<std::string> raw_data = pipe_connection->GetAllAtributes(number_of_all_participants);
 		for (int i = 0; i < number_of_instances; ++i)
 		{
 			const double durablity = atof(raw_data[(i + ai_index)*3 + 1].c_str());
@@ -140,8 +141,11 @@ void Game::RacePhase()
 			{
 				ai[i].SetRaceAttributes(i + ai_index, raw_data);
 				const std::string action = ai[i].TakeAction(tour);
-				PipeConnection::SetAction(i, action[0] - 48, atoi(action.substr(1, static_cast<int>(action.size()) - 1).c_str()));
-				PipeConnection::SetAttack(i, ai[i].Attack(tour, i, raw_data));
+				pipe_connection->SetAction(i, action[0] - 48, atoi(action.substr(1, static_cast<int>(action.size()) - 1).c_str()));
+				if(i)
+				{
+					pipe_connection->SetAttack(i, ai[i].Attack(tour, i + ai_index, raw_data));
+				}
 			}
 		}
 		tour.erase(tour.begin());
@@ -149,5 +153,5 @@ void Game::RacePhase()
 }
 Game::~Game()
 {
-	PipeConnection::Exit();
+	pipe_connection->Exit();
 }

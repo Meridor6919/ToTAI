@@ -3,9 +3,17 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <fstream>
 
-namespace PipeConnection
+class PipeConnection
 {
+	std::ofstream output_stream;
+	std::string ProcessMsg(Report::StreamType input, std::string msg = "");
+	void CloseOutputStream();
+
+public:
+	PipeConnection();
+
 	//Waits for parent process to initialize
 	void Start();
 	//Waits for exit signal
@@ -33,4 +41,4 @@ namespace PipeConnection
 	void SetTires(int id, std::string tire_path);
 	void SetCar(int id, std::string car_path);
 
-}
+};

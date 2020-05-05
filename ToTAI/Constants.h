@@ -19,6 +19,12 @@ namespace ConnectionCodes{
 		last
 	};
 }
+namespace Report {
+	enum StreamType {
+		Output,
+		Input
+	};
+}
 namespace GameValues {
 	enum Behaviour {
 		Drifter,

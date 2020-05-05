@@ -1,32 +1,48 @@
 #include "PipeConnection.h"
 
+std::string PipeConnection::ProcessMsg(Report::StreamType input, std::string msg)
+{
+	output_stream <<(input ? "Input: " : "Output: ") + msg << '\n';
+	if (input)
+	{
+		std::cin >> msg;
+	}
+	else
+	{
+		std::cout << msg << std::endl;
+	}
+	return msg;
+}
+void PipeConnection::CloseOutputStream()
+{
+	output_stream.close();
+}
+PipeConnection::PipeConnection()
+{
+	output_stream.open("ToTAI.log");
+}
 void PipeConnection::Start()
 {
-	std::string temp;
-	std::cout << ConnectionCodes::Start << std::endl;
-	std::cin >> temp;
+	ProcessMsg(Report::Output, std::to_string(ConnectionCodes::Start));
+	ProcessMsg(Report::Input);
 }
 void PipeConnection::Exit()
 {
-	std::string temp;
-	std::cin >> temp;
+	ProcessMsg(Report::Input);
+	CloseOutputStream();
 }
 std::pair<int, int> PipeConnection::GetInit()
 {
-	int x;
-	std::string temp;
-	std::cout << ConnectionCodes::GetInit << std::endl;
-	std::cin >> temp;
-	x = temp[0] - 48;
-	std::cin >> temp;
-	return { x, temp[0] - 48 };
+	ProcessMsg(Report::Output, std::to_string(ConnectionCodes::GetInit));
+	const int number_of_ais = ProcessMsg(Report::Input)[0] - 48;
+	const int number_of_participants = ProcessMsg(Report::Input)[0] - 48;
+	return { number_of_ais, number_of_participants };
 }
 bool PipeConnection::NewTurn(int id)
 {
-	std::string temp;
-	std::cout << ConnectionCodes::NewTurn << id << std::endl;
-	std::cin >> temp;
-	if (temp == "0")
+	ProcessMsg(Report::Output, std::to_string(ConnectionCodes::NewTurn) + static_cast<char>(id + 48));
+	bool result = ProcessMsg(Report::Input)[0] - 48;
+	if (!result)
 	{
 		return true;
 	}
@@ -38,98 +54,83 @@ bool PipeConnection::NewTurn(int id)
 std::vector<std::string> PipeConnection::GetCarNames()
 {
 	std::vector<std::string> ret;
-	std::string temp;
-	std::cout << ConnectionCodes::GetCarNames << std::endl;
-	std::cin >> temp;
-	const int number_of_cars = atoi(temp.c_str());
+	ProcessMsg(Report::Output, std::to_string(ConnectionCodes::GetCarNames));
+	const int number_of_cars = atoi(ProcessMsg(Report::Input).c_str());
 	for (int i = 0; i < number_of_cars; ++i)
 	{
-		std::cin >> temp;
-		ret.emplace_back(temp);
+		ret.emplace_back(ProcessMsg(Report::Input));
 	}
 	return ret;
 }
 std::vector<std::string> PipeConnection::GetTireNames()
 {
 	std::vector<std::string> ret;
-	std::string temp;
-	std::cout << ConnectionCodes::GetTireNames << std::endl;
-	std::cin >> temp;
-	const int number_of_tires = atoi(temp.c_str());
+	ProcessMsg(Report::Output, std::to_string(ConnectionCodes::GetTireNames));
+	const int number_of_tires = atoi(ProcessMsg(Report::Input).c_str());
 	for (int i = 0; i < number_of_tires; ++i)
 	{
-		std::cin >> temp;
-		ret.emplace_back(temp);
+		ret.emplace_back(ProcessMsg(Report::Input));
 	}
 	return ret;
 }
 std::vector<int> PipeConnection::GetCarParams(std::string car_path)
 {
 	std::vector<int> ret;
-	std::string temp;
-	std::cout << ConnectionCodes::GetCarParams << car_path << std::endl;
+	ProcessMsg(Report::Output, std::to_string(ConnectionCodes::GetCarParams) + car_path);
 	for (int i = 0; i < CarAttributes::last; ++i)
 	{
-		std::cin >> temp;
-		ret.emplace_back(atoi(temp.c_str()));
+		ret.emplace_back(atoi(ProcessMsg(Report::Input).c_str()));
 	}
 	return ret;
 }
 std::vector<std::string> PipeConnection::GetTireParams(std::string tire_path)
 {
 	std::vector<std::string> ret;
-	std::string temp;
-	std::cout << ConnectionCodes::GetTireParams << tire_path << std::endl;
+	ProcessMsg(Report::Output, std::to_string(ConnectionCodes::GetTireParams) + tire_path);
 	for (int i = 0; i < GameValues::TerrainTypes; ++i)
 	{
-		std::cin >> temp;
-		ret.emplace_back(temp);
+		ret.emplace_back(ProcessMsg(Report::Input));
 	}
 	return ret;
 }
 std::vector<std::string> PipeConnection::GetAllAtributes(int number_of_participants)
 {
 	std::vector<std::string> ret;
-	std::string temp;
-	std::cout << ConnectionCodes::GetAllAttributes << std::endl;
+	ProcessMsg(Report::Output, std::to_string(ConnectionCodes::GetAllAttributes));
 	for (int i = 0; i < number_of_participants*3; ++i)
 	{
-		std::cin >> temp;
-		ret.emplace_back(temp);
+		ret.emplace_back(ProcessMsg(Report::Input));
 	}
 	return ret;
 }
 std::vector<std::string> PipeConnection::GetTour()
 {
 	std::vector<std::string> ret;
-	std::string temp;
-	std::cout << ConnectionCodes::GetTour << std::endl;
-	int size;
-	std::cin >> size;
+	ProcessMsg(Report::Output, std::to_string(ConnectionCodes::GetTour));
+	const int size = atoi(ProcessMsg(Report::Input).c_str());
 	for (int i = 0; i < size; ++i)
 	{
-		std::cin >> temp;
-		ret.emplace_back(temp);
+		ret.emplace_back(ProcessMsg(Report::Input));
 	}
 	return ret;
 }
 void PipeConnection::SetAction(int id, int action_type, int value)
 {
-	std::cout << ConnectionCodes::SetAction << id << action_type << value << std::endl;
+	ProcessMsg(Report::Output, std::to_string(ConnectionCodes::SetAction) + static_cast<char>(id + 48) + static_cast<char>(action_type + 48) + std::to_string(value));
 }
 void PipeConnection::SetAttack(int id, int target)
 {
-	std::cout << ConnectionCodes::SetAttack << id << target << std::endl;
+	ProcessMsg(Report::Output, std::to_string(ConnectionCodes::SetAttack) + static_cast<char>(id + 48) + std::to_string(target));
 }
 void PipeConnection::SetName(int id, std::string name)
 {
-	std::cout << ConnectionCodes::SetName << id << name << std::endl;
+	ProcessMsg(Report::Output, std::to_string(ConnectionCodes::SetName) + static_cast<char>(id + 48) + name);
 }
 void PipeConnection::SetTires(int id, std::string tire_path)
 {
-	std::cout << ConnectionCodes::SetTires << id << tire_path << std::endl;
+	ProcessMsg(Report::Output, std::to_string(ConnectionCodes::SetTires) + static_cast<char>(id + 48) + tire_path);
 }
 void PipeConnection::SetCar(int id, std::string car_path)
 {
-	std::cout << ConnectionCodes::SetCar << id << car_path << std::endl;
+	ProcessMsg(Report::Output, std::to_string(ConnectionCodes::SetCar) + static_cast<char>(id + 48) + car_path);
 }
