@@ -2,7 +2,6 @@
 
 std::string PipeConnection::ProcessMsg(Report::StreamType input, std::string msg)
 {
-	output_stream <<(input ? "Input: " : "Output: ") + msg << '\n';
 	if (input)
 	{
 		std::cin >> msg;
@@ -11,6 +10,9 @@ std::string PipeConnection::ProcessMsg(Report::StreamType input, std::string msg
 	{
 		std::cout << msg << std::endl;
 	}
+	output_stream.open("ToTAI.log", std::ios::app);
+	output_stream << (input ? "Input: " : "Output: ") + msg << '\n';
+	output_stream.close();
 	return msg;
 }
 void PipeConnection::CloseOutputStream()
@@ -20,6 +22,7 @@ void PipeConnection::CloseOutputStream()
 PipeConnection::PipeConnection()
 {
 	output_stream.open("ToTAI.log");
+	output_stream.close();
 }
 void PipeConnection::Start()
 {
