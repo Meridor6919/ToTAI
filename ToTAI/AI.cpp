@@ -8,7 +8,7 @@ void AI::CarSelection()
 		std::vector<int> car_atributes = pipe_connection->GetCarParams(car_names[i]);
 		for (int j = 0; j < number_of_ais; ++j)
 		{
-			ai_object[j].TryCar(car_atributes, tour);
+			ai_object[j].TryCar(car_atributes, tour, car_names[i]);
 		}
 	}
 	for (int i = 0; i < number_of_ais; ++i)
@@ -25,7 +25,7 @@ void AI::TiresSelection()
 		std::vector<std::string> tire_atributes = pipe_connection->GetTireParams(tire_names[i]);
 		for (int j = 0; j < number_of_ais; ++j)
 		{
-			ai_object[j].TryTires(tire_atributes, tour);
+			ai_object[j].TryTires(tire_atributes, tour, tire_names[i]);
 		}
 	}
 	for (int i = 0; i < number_of_ais; ++i)
@@ -51,6 +51,15 @@ void AI::InitializationPhase()
 	}
 	CarSelection();
 	TiresSelection();
+	while (true)
+	{
+		std::vector<std::string> current_attributes = pipe_connection->GetAllAttributes(number_of_participants);
+		if (atof(current_attributes[(number_of_participants - number_of_ais) * 3 + 1].c_str()) > 0.0)
+		{
+			break;
+		}
+		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+	}
 }
 
 void AI::GamePhase()
@@ -59,19 +68,36 @@ void AI::GamePhase()
 	while (static_cast<int>(tour.size()) > 0)
 	{
 		std::vector<std::string> current_attributes = pipe_connection->GetAllAttributes(number_of_participants);
-		while(!pipe_connection->NewTurn(0))
+		std::vector<double> durability = {};
+		int alive_participant = -1;
+		for (int i = 0; i < number_of_ais; ++i)
 		{
-			std::this_thread::sleep_for(std::chrono::milliseconds(100));
+			durability.emplace_back(atof(current_attributes[(number_of_participants - number_of_ais + i) * 3 + 1].c_str()));
+			if (durability[i] > 0.0)
+			{
+				alive_participant = i;
+			}
+		}
+		if (alive_participant < 0)
+		{
+			break;
+		}
+		while (!pipe_connection->NewTurn(alive_participant))
+		{
+			std::this_thread::sleep_for(std::chrono::milliseconds(500));
 		}
 		for (int i = 0; i < number_of_ais; ++i)
 		{
-			if (!first_turn)
+			if (durability[i] > 0.0)
 			{
-				int target = ai_object[i].GetAttack(i, current_attributes, tour);
-				pipe_connection->SetAttack(i, target);
+				if (!first_turn)
+				{
+					int target = ai_object[i].GetAttack(i, current_attributes, tour);
+					pipe_connection->SetAttack(i, target);
+				}
+				std::pair<int, int> action = ai_object[i].GetAction(i, current_attributes, tour);
+				pipe_connection->SetAction(i, action.first, action.second);
 			}
-			std::pair<int, int> action = ai_object[i].GetAction(i, current_attributes, tour);
-			pipe_connection->SetAction(i, action.first, action.second);
 		}
 		tour.erase(tour.begin());
 	}

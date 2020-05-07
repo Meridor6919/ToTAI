@@ -4,11 +4,11 @@ AIobject::AIobject()
 {
 }
 
-void AIobject::TryCar(const std::vector<int>& car_attributes, const std::vector<std::string>& tour)
+void AIobject::TryCar(const std::vector<int>& car_attributes, const std::vector<std::string>& tour, std::string car_path)
 {
 }
 
-void AIobject::TryTires(const std::vector<std::string>& tire_attributes, const std::vector<std::string>& tour)
+void AIobject::TryTires(const std::vector<std::string>& tire_attributes, const std::vector<std::string>& tour, std::string tire_path)
 {
 }
 
@@ -29,7 +29,7 @@ std::string AIobject::GetName()
 
 std::pair<int, int> AIobject::GetAction(int id, const std::vector<std::string>& all_attributes, const std::vector<std::string>& tour)
 {
-	return std::pair<int, int>(5, 0);
+	return std::pair<int, int>(4, 0);
 }
 
 int AIobject::GetAttack(int id, const std::vector<std::string>& all_attributes, const std::vector<std::string>& tour)
