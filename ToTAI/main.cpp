@@ -1,8 +1,8 @@
-#include "Game.h"
+#include "AI.h"
 
 int main()
 {
-	Game game_instance;
-	game_instance.LobbyPhase();
-	game_instance.RacePhase();
+	AI game_instance;
+	game_instance.InitializationPhase();
+	game_instance.GamePhase();
 }

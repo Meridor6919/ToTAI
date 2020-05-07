@@ -96,7 +96,7 @@ std::vector<std::string> PipeConnection::GetTireParams(std::string tire_path)
 	}
 	return ret;
 }
-std::vector<std::string> PipeConnection::GetAllAtributes(int number_of_participants)
+std::vector<std::string> PipeConnection::GetAllAttributes(int number_of_participants)
 {
 	std::vector<std::string> ret;
 	ProcessMsg(Report::Output, std::to_string(ConnectionCodes::GetAllAttributes));

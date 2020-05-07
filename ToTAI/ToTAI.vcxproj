@@ -118,7 +118,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AIobject.cpp" />
-    <ClCompile Include="Game.cpp" />
+    <ClCompile Include="AI.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PipeConnection.cpp" />
     <ClCompile Include="PipeConnection.h" />
@@ -126,7 +126,7 @@
   <ItemGroup>
     <ClInclude Include="AIobject.h" />
     <ClInclude Include="Constants.h" />
-    <ClInclude Include="Game.h" />
+    <ClInclude Include="AI.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

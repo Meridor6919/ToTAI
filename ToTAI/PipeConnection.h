@@ -31,7 +31,7 @@ public:
 	//Returns tire params
 	std::vector<std::string> GetTireParams(std::string tire_path);
 	//Returns atributes of all participants starting with current speed of all participants, then current durablity and then score.
-	std::vector<std::string> GetAllAtributes(int number_of_participants);
+	std::vector<std::string> GetAllAttributes(int number_of_participants);
 	//Returns all segments of tour
 	std::vector<std::string> GetTour();
 
