@@ -46,7 +46,7 @@ void AI::InitializationPhase()
 
 	for (int i = 0; i < number_of_ais; ++i)
 	{
-		ai_object.emplace_back(AIobject());
+		ai_object.emplace_back(ActiveAI());
 		pipe_connection->SetName(i, ai_object[i].GetName());
 	}
 	CarSelection();

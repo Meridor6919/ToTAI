@@ -1,5 +1,5 @@
 #pragma once
-#include "AIobject.h"
+#include "ActiveAI.h"
 #include "PipeConnection.h"
 #include <vector>
 #include <time.h>
@@ -9,7 +9,7 @@ class AI
 {
 	std::unique_ptr<PipeConnection> pipe_connection;
 	std::vector<std::string> tour;
-	std::vector<AIobject> ai_object;
+	std::vector<ActiveAI> ai_object;
 	int number_of_participants;
 	int number_of_ais;
 
