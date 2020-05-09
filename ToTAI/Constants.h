@@ -29,7 +29,8 @@ namespace GameValues {
 	enum Behaviour {
 		Drifter,
 		Aggressive,
-		Balanced
+		Balanced,
+		last
 	};
 	const int TerrainTypes = 6;
 	const int attack_forward_distance = 4;
