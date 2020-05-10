@@ -1,4 +1,4 @@
-#include "ActiveAI.h"
+﻿#include "ActiveAI.h"
 
 std::array<int, GameValues::TerrainTypes> ActiveAI::CountTerrainTypes(const std::vector<std::string>& tour)
 {
@@ -53,6 +53,27 @@ double ActiveAI::TireEffectivness(const std::vector<std::string>& tire_attribute
 	return score;
 }
 
+double ActiveAI::CarParameterScore(double value, double increasing_bound, bool decrease_after, double weight)
+{
+	double after_the_peak = value > increasing_bound;
+	if (after_the_peak && decrease_after)
+	{
+		value = 2 * increasing_bound - value;
+		if (value < 0)
+		{
+			value = 0;
+		}
+	}
+	else
+	{
+		if (after_the_peak)
+		{
+			value = increasing_bound;
+		}
+	}
+	return (value / increasing_bound)*(value / increasing_bound) * weight;
+}
+
 
 ActiveAI::ActiveAI()
 {
@@ -84,7 +105,49 @@ std::string ActiveAI::GetName()
 
 void ActiveAI::TryCar(const std::vector<int>& car_attributes, const std::vector<std::string>& tour, std::string car_path)
 {
-	AIobject::TryCar(car_attributes, tour, car_path);
+	double local_score = 1; //from 0,00000001‬ to 100 000 000
+	double optimum_max_speed = 200.0;
+	std::array<double, CarAttributes::last> maximum_value;
+	std::array<double, CarAttributes::last> value_weight;
+
+	maximum_value[CarAttributes::max_speed] = optimum_max_speed;
+	maximum_value[CarAttributes::max_accelerating] = car_attributes[CarAttributes::max_speed];
+	maximum_value[CarAttributes::max_braking] = car_attributes[CarAttributes::max_speed] * 0.9;
+	maximum_value[CarAttributes::hand_brake_value] = 30.0;
+	maximum_value[CarAttributes::durability] = car_attributes[CarAttributes::max_speed] * 10;
+	maximum_value[CarAttributes::visibility] = 7;
+	maximum_value[CarAttributes::turn_mod] = 300;
+	maximum_value[CarAttributes::drift_mod] = 300;
+
+	switch (behaviour)
+	{
+		case GameValues::Drifter:
+		{
+			value_weight = { 6.0, 6.0, 0.5, 9.9, 5.0, 2.0, 0.0, 10.0 };
+			break;
+		}
+		case GameValues::Aggressive:
+		{
+			value_weight = { 9.0, 9.0, 0.5, 0.5, 8.0, 0.0, 10.0, 10.0 };
+			break;
+		}
+		case GameValues::Balanced:
+		{
+			value_weight = { 8.0, 6.0, 3.0, 3.5, 7.0, 3.0, 9.9, 9.9 };
+			break;
+		}
+	}
+	for (int i = 0; i < CarAttributes::last; ++i)
+	{
+		local_score *= 10.0 - value_weight[i] + CarParameterScore(car_attributes[i], maximum_value[i], i == CarAttributes::hand_brake_value, value_weight[i]);
+	}
+	if (local_score > best_car_score)
+	{
+		best_car_score = local_score;
+		best_car = car_path;
+		this->car_attributes = car_attributes;
+
+	}
 }
 
 void ActiveAI::TryTires(const std::vector<std::string>& tire_attributes, const std::vector<std::string>& tour, std::string tire_path)
