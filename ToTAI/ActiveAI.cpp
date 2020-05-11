@@ -74,6 +74,34 @@ double ActiveAI::CarParameterScore(double value, double increasing_bound, bool d
 	return (value / increasing_bound)*(value / increasing_bound);
 }
 
+int ActiveAI::OptimumMaximumSpeed(const std::vector<std::string>& tour)
+{
+	double global_max = 0.0;
+	double local_max = 0.0;
+	for (int i = 0; i < static_cast<int>(tour.size()); ++i)
+	{
+		local_max += 75.0;
+		const int segment_size = static_cast<int>(tour[i].size());
+		if (segment_size > 1)
+		{
+			double safe_speed = atof(tour[i].substr(1, segment_size - 1).c_str());
+			if (safe_speed < local_max)
+			{
+				local_max = safe_speed;
+			}
+		}
+		if (local_max >= 900)
+		{
+			local_max = 900;
+		}
+		if (local_max > global_max)
+		{
+			global_max = local_max;
+		}
+	}
+	return static_cast<int>(global_max);
+}
+
 
 ActiveAI::ActiveAI()
 {
@@ -106,7 +134,7 @@ std::string ActiveAI::GetName()
 void ActiveAI::TryCar(const std::vector<int>& car_attributes, const std::vector<std::string>& tour, std::string car_path)
 {
 	double local_score = 1;
-	double optimum_max_speed = 200.0;
+	const static double optimum_max_speed = OptimumMaximumSpeed(tour);
 	std::array<double, CarAttributes::last> maximum_value;
 	std::array<double, CarAttributes::last> value_weight;
 
@@ -141,9 +169,9 @@ void ActiveAI::TryCar(const std::vector<int>& car_attributes, const std::vector<
 	for (int i = 0; i < CarAttributes::last; ++i)
 	{
 		double local_modifier = CarParameterScore(car_attributes[i], maximum_value[i], i == CarAttributes::hand_brake_value);
-		if (i != CarAttributes::visibility && max_speed_modifier < local_modifier)
+		if (i != CarAttributes::visibility && max_speed_modifier*2.0 < local_modifier)
 		{
-			local_modifier = max_speed_modifier;
+			local_modifier = max_speed_modifier * 2.0;
 		}
 		local_score *= 10.0 - value_weight[i] + local_modifier* value_weight[i];
 	}

@@ -15,7 +15,7 @@ protected:
 	double AvarageProbabilityOfTires(double number_of_tests, double wanted_number);
 	double TireEffectivness(const std::vector<std::string>& tire_attributes, const std::vector<std::string>& tour);
 	double CarParameterScore(double value, double increasing_bound, bool decrease_after);
-
+	int OptimumMaximumSpeed(const std::vector<std::string>& tour);
 public:
 	ActiveAI();
 	std::string GetName() override;
