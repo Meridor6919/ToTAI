@@ -53,7 +53,7 @@ double ActiveAI::TireEffectivness(const std::vector<std::string>& tire_attribute
 	return score;
 }
 
-double ActiveAI::CarParameterScore(double value, double increasing_bound, bool decrease_after, double weight)
+double ActiveAI::CarParameterScore(double value, double increasing_bound, bool decrease_after)
 {
 	double after_the_peak = value > increasing_bound;
 	if (after_the_peak && decrease_after)
@@ -71,7 +71,7 @@ double ActiveAI::CarParameterScore(double value, double increasing_bound, bool d
 			value = increasing_bound;
 		}
 	}
-	return (value / increasing_bound)*(value / increasing_bound) * weight;
+	return (value / increasing_bound)*(value / increasing_bound);
 }
 
 
@@ -105,7 +105,7 @@ std::string ActiveAI::GetName()
 
 void ActiveAI::TryCar(const std::vector<int>& car_attributes, const std::vector<std::string>& tour, std::string car_path)
 {
-	double local_score = 1; //from 0,00000001‬ to 100 000 000
+	double local_score = 1;
 	double optimum_max_speed = 200.0;
 	std::array<double, CarAttributes::last> maximum_value;
 	std::array<double, CarAttributes::last> value_weight;
@@ -123,23 +123,29 @@ void ActiveAI::TryCar(const std::vector<int>& car_attributes, const std::vector<
 	{
 		case GameValues::Drifter:
 		{
-			value_weight = { 6.0, 6.0, 0.5, 9.9, 5.0, 2.0, 0.0, 10.0 };
+			value_weight = { 3.0, 6.0, 0.5, 9.9, 5.0, 2.0, 0.0, 10.0 };
 			break;
 		}
 		case GameValues::Aggressive:
 		{
-			value_weight = { 9.0, 9.0, 0.5, 0.5, 8.0, 0.0, 10.0, 10.0 };
+			value_weight = { 6.0, 9.0, 0.5, 0.5, 8.0, 0.0, 10.0, 10.0 };
 			break;
 		}
 		case GameValues::Balanced:
 		{
-			value_weight = { 8.0, 6.0, 3.0, 3.5, 7.0, 3.0, 9.9, 9.9 };
+			value_weight = { 5.0, 6.0, 3.0, 3.5, 7.0, 3.0, 9.9, 9.9 };
 			break;
 		}
 	}
+	double max_speed_modifier = CarParameterScore(car_attributes[CarAttributes::max_speed], maximum_value[CarAttributes::max_speed], false);
 	for (int i = 0; i < CarAttributes::last; ++i)
 	{
-		local_score *= 10.0 - value_weight[i] + CarParameterScore(car_attributes[i], maximum_value[i], i == CarAttributes::hand_brake_value, value_weight[i]);
+		double local_modifier = CarParameterScore(car_attributes[i], maximum_value[i], i == CarAttributes::hand_brake_value);
+		if (i != CarAttributes::visibility && max_speed_modifier < local_modifier)
+		{
+			local_modifier = max_speed_modifier;
+		}
+		local_score *= 10.0 - value_weight[i] + local_modifier* value_weight[i];
 	}
 	if (local_score > best_car_score)
 	{
