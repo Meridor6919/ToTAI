@@ -194,3 +194,59 @@ void ActiveAI::TryTires(const std::vector<std::string>& tire_attributes, const s
 		this->tire_attributes = tire_attributes;
 	}
 }
+std::pair<int, int> ActiveAI::GetAction(int id, const std::vector<std::string>& all_attributes, const std::vector<std::string>& tour)
+{
+	return std::pair<int, int>(4, 0);
+}
+
+int ActiveAI::GetAttack(int id, const std::vector<std::string>& all_attributes, const std::vector<std::string>& tour)
+{
+	std::vector<double> score_vector = {};
+	for (int i = 0; i < static_cast<int>(all_attributes.size()) / 3; ++i)
+	{
+		score_vector.emplace_back(atof(all_attributes[i * 3].c_str()));
+	}
+
+	switch (behaviour)
+	{
+		case GameValues::Behaviour::Aggressive:
+		{
+			return Target(id, score_vector, -GameValues::attack_backward_distance, GameValues::attack_forward_distance); //both ways attacking attacking
+		}
+		case GameValues::Behaviour::Drifter:
+		{
+			if (static_cast<int>(tour[0].size()) > 1 || static_cast<int>(tour[1].size()) > 1)
+			{
+				return Target(id, score_vector, 0, GameValues::attack_forward_distance); //both ways attacking attacking
+			}
+			break;
+		}
+		case GameValues::Behaviour::Balanced:
+		{
+			if (atof(all_attributes[id*3+1].c_str()) < static_cast<double>(car_attributes[CarAttributes::durability])*0.33)
+			{
+				return Target(id, score_vector, 0, GameValues::attack_forward_distance); //both ways attacking attacking
+			}
+			break;
+		}
+	}
+	return 10;
+}
+int ActiveAI::Target(int id, std::vector<double> local_score, double lower_bound, double upper_bound)
+{
+	int selected_id = 10;
+	double high_score = lower_bound;
+	for (int i = 0; i < static_cast<int>(local_score.size()); ++i)
+	{
+		if (id != i)
+		{
+			//const double local_score = atof(data[i * 3 + 2].c_str());
+			if (local_score[id] <= local_score[i] + upper_bound && local_score[id] >= local_score[i] + lower_bound && high_score >= local_score[i])
+			{
+				selected_id = i;
+				high_score = local_score[i];
+			}
+		}
+	}
+	return selected_id;
+}
