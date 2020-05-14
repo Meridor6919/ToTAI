@@ -20,6 +20,11 @@ protected:
 	int OptimumMaximumSpeed(const std::vector<std::string>& tour);
 	//attack methods
 	int Target(int id, std::vector<double> local_score, double lower_bound, double upper_bound);
+	//action method
+	double EvaluateChance(std::string field, const double speed, const bool drift);
+	double CalculateBurning(double value);
+	double EvaluateSpeed(std::string field, const double chance_to_fail, const bool drift);
+	double CalculateSpeed(const std::string &current_field, const double speed, const int acceleration_value);
 
 public:
 	ActiveAI();

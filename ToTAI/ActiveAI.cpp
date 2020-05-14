@@ -1,5 +1,125 @@
 ﻿#include "ActiveAI.h"
 
+double ActiveAI::EvaluateChance(std::string field, const double speed, const bool drift)
+{
+	if (static_cast<int>(field.size()) < 2)
+	{
+		return 0.0;
+	}
+	field.erase(0, 1);
+	float base = (speed / atof(field.c_str()) - 1) * 100.0 + speed - atof(field.c_str());
+
+	if (base < 0.0)
+	{
+		base = 0.0;
+	}
+	if (drift)
+	{
+		base /= static_cast<double>(car_attributes[CarAttributes::drift_mod]) / 100.0;
+		if (base > 100.0)
+		{
+			base = 100.0;
+		}
+		float result = (speed + base) / 2.0;
+		if (base < speed)
+		{
+			result = (speed + base * 2.0) / 3.0;
+		}
+		if (result > 100.0)
+		{
+			result = 100.0;
+		}
+		return result;
+	}
+	else
+	{
+		base /= static_cast<double>(car_attributes[CarAttributes::turn_mod]) / 100.0;
+		if (base > 100.0)
+		{
+			base = 100.0;
+		}
+		return (sqrt(base * -base + 200.0 * base) + 2.0 * base) / 3.0;
+	}
+}
+double ActiveAI::CalculateBurning(double value)
+{
+	double raw = value / static_cast<double>(car_attributes[CarAttributes::max_speed]);
+	double result = 0.0;
+
+	if (raw < 0.0)
+	{
+		return 0.0;
+	}
+	if (raw > 0.25)
+	{
+		raw = 0.25;
+		value = static_cast<double>(car_attributes[CarAttributes::max_speed]) * 0.25;
+	}
+	int level = static_cast<int>(raw*20.0) + 10;
+	result = value * static_cast<double>(level + level * level) / 2.0;
+	return result / 50.0;
+}
+double ActiveAI::EvaluateSpeed(std::string field, const double chance_to_fail, const bool drift)
+{
+	if (static_cast<int>(field.size()) < 2)
+	{
+		return 0.0f;
+	}
+	field.erase(0, 1);
+
+	if (drift)
+	{
+		double result = (2.0 * chance_to_fail*static_cast<double>(car_attributes[CarAttributes::drift_mod]) + 10000.0 + 100.0 * atof(field.c_str())) /
+			(10000.0 / atof(field.c_str()) + 100.0 + static_cast<double>(car_attributes[CarAttributes::drift_mod]));
+		double secondary_result = (3.0 * chance_to_fail*static_cast<double>(car_attributes[CarAttributes::drift_mod]) + 20000.0 + 200.0 * atof(field.c_str())) /
+			(20000.0 / atof(field.c_str()) + 200.0 + static_cast<double>(car_attributes[CarAttributes::drift_mod]));
+
+		if (secondary_result > result)
+		{
+			result = secondary_result;
+		}
+		float base = ((result / atof(field.c_str()) - 1.0) * 100.0 + result - atof(field.c_str())) /
+			(static_cast<double>(car_attributes[CarAttributes::drift_mod]) / 100.0);
+
+		if (base > 100.0)
+		{
+			result = 2.0 * chance_to_fail - 100.0;
+		}
+		else if (base < 0.0)
+		{
+			result = 3.0 * chance_to_fail;
+		}
+		return result;
+	}
+	else
+	{
+		double delta = (200.0 + 12.0 * chance_to_fail)*(200.0 + 12.0 * chance_to_fail) - 180.0 * chance_to_fail*chance_to_fail;
+		double base = (-(200.0 + 12.0 * chance_to_fail) + sqrt(delta)) / -10.0*((static_cast<double>(car_attributes[CarAttributes::turn_mod])) / 100.0);
+		return atof(field.c_str()) + base / (100.0 / atof(field.c_str()) + 1.0);
+	}
+}
+double ActiveAI::CalculateSpeed(const std::string &current_field, const double speed, const int acceleration_value)
+{
+	const int terrain_type = current_field[0] - 48;
+	double x, y;
+	double tire_modifier = 0.0;
+	for (int i = 0; i < static_cast<int>(tire_attributes[terrain_type].size()); ++i)
+	{
+		if (tire_attributes[terrain_type][i] == 'x')
+		{
+			x = atof(tire_attributes[terrain_type].substr(0, i).c_str());
+			y = atof(tire_attributes[terrain_type].substr(i + 1, static_cast<int>(tire_attributes[terrain_type].size()) - i - 1).c_str());
+			break;
+		}
+	}
+	for (int j = 0; j < static_cast<int>(y - x + 1); ++j)
+	{
+		tire_modifier += AvarageProbabilityOfTires(y, j);
+	}
+
+	return (speed + static_cast<double>(acceleration_value) * (0.9 + 0.2*tire_modifier)) * 0.9;
+}
+
 std::array<int, GameValues::TerrainTypes> ActiveAI::CountTerrainTypes(const std::vector<std::string>& tour)
 {
 	std::array<int, GameValues::TerrainTypes> ret;
