@@ -1,5 +1,118 @@
 ﻿#include "ActiveAI.h"
 
+std::array<int, GameValues::TerrainTypes> ActiveAI::CountTerrainTypes(const std::vector<std::string>& tour)
+{
+	std::array<int, GameValues::TerrainTypes> ret;
+	ret.fill(0);
+	for (int i = 0; i < static_cast<int>(tour.size()); ++i)
+	{
+		++ret[tour[i][0] - 48];
+	}
+	return ret;
+}
+double ActiveAI::AvarageProbabilityOfTires(double number_of_tests, double wanted_number)
+{
+	double result = 1;
+	double extra = (number_of_tests - wanted_number) < 1 ? 1.0 : 0.0;
+	wanted_number < 1 ? wanted_number = 1 : 0;
+	while (number_of_tests > 1)
+	{
+		result *= number_of_tests / wanted_number / extra / 2;
+		--number_of_tests;
+		--wanted_number < 1 ? wanted_number = 1 : 0;
+		--extra < 1 ? extra = 1 : 0;
+	}
+	return result / 2;
+}
+double ActiveAI::TireEffectivness(const std::vector<std::string>& tire_attributes, const std::vector<std::string>& tour)
+{
+	double score = 0.0;
+	double x;
+	double y;
+
+	for (int i = 0; i < static_cast<int>(GameValues::TerrainTypes); ++i)
+	{
+		for (int j = 0; j < static_cast<int>(tire_attributes[i].size()); ++j)
+		{
+			if (tire_attributes[i][j] == 'x')
+			{
+				x = atof(tire_attributes[i].substr(0, j).c_str());
+				y = atof(tire_attributes[i].substr(j + 1, static_cast<int>(tire_attributes[i].size()) - j - 1).c_str());
+				break;
+			}
+		}
+		std::array<int, GameValues::TerrainTypes> terrain = CountTerrainTypes(tour);
+		for (int j = 0; j < static_cast<int>(y - x + 1); ++j)
+		{
+			score += AvarageProbabilityOfTires(y, j) * terrain[i];
+		}
+	}
+	return score;
+}
+double ActiveAI::CarParameterScore(double value, double increasing_bound, bool decrease_after)
+{
+	const bool after_the_peak = value > increasing_bound;
+	if (after_the_peak && decrease_after)
+	{
+		value = 2 * increasing_bound - value;
+		if (value < 0)
+		{
+			value = 0;
+		}
+	}
+	else
+	{
+		if (after_the_peak)
+		{
+			value = increasing_bound;
+		}
+	}
+	return (value / increasing_bound)*(value / increasing_bound);
+}
+int ActiveAI::OptimumMaximumSpeed(const std::vector<std::string>& tour)
+{
+	double global_max = 0.0;
+	double local_max = 0.0;
+	for (int i = 0; i < static_cast<int>(tour.size()); ++i)
+	{
+		local_max += 75.0;
+		const int segment_size = static_cast<int>(tour[i].size());
+		if (segment_size > 1)
+		{
+			double safe_speed = atof(tour[i].substr(1, segment_size - 1).c_str());
+			if (safe_speed < local_max)
+			{
+				local_max = safe_speed;
+			}
+		}
+		if (local_max >= 900)
+		{
+			local_max = 900;
+		}
+		if (local_max > global_max)
+		{
+			global_max = local_max;
+		}
+	}
+	return static_cast<int>(global_max);
+}
+int ActiveAI::SelectTarget(int id, std::vector<double> local_score, double lower_bound, double upper_bound)
+{
+	int selected_id = 10;
+	double high_score = lower_bound;
+	for (int i = 0; i < static_cast<int>(local_score.size()); ++i)
+	{
+		if (id != i)
+		{
+			if (local_score[id] <= local_score[i] + upper_bound && local_score[id] >= local_score[i] + lower_bound && high_score >= local_score[i])
+			{
+				selected_id = i;
+				high_score = local_score[i];
+			}
+		}
+	}
+	return selected_id;
+}
 double ActiveAI::EvaluateChance(std::string field, const double speed, const bool drift)
 {
 	if (static_cast<int>(field.size()) < 2)
@@ -59,7 +172,7 @@ double ActiveAI::CalculateBurning(double value)
 	result = value * static_cast<double>(level + level * level) / 2.0;
 	return result / 50.0;
 }
-double ActiveAI::EvaluateSpeed(std::string field, const double chance_to_fail, const bool drift)
+double ActiveAI::MaximumSpeedOnTurn(std::string field, const double chance_to_fail, const bool drift)
 {
 	if (static_cast<int>(field.size()) < 2)
 	{
@@ -116,118 +229,12 @@ double ActiveAI::CalculateSpeed(const std::string &current_field, const double s
 	{
 		tire_modifier += AvarageProbabilityOfTires(y, j);
 	}
-
 	return (speed + static_cast<double>(acceleration_value) * (0.9 + 0.2*tire_modifier)) * 0.9;
 }
-
-std::array<int, GameValues::TerrainTypes> ActiveAI::CountTerrainTypes(const std::vector<std::string>& tour)
-{
-	std::array<int, GameValues::TerrainTypes> ret;
-	ret.fill(0);
-
-	for (int i = 0; i < static_cast<int>(tour.size()); ++i)
-	{
-		++ret[tour[i][0] - 48];
-	}
-	return ret;
-}
-double ActiveAI::AvarageProbabilityOfTires(double number_of_tests, double wanted_number)
-{
-	double result = 1;
-	double extra = number_of_tests - wanted_number;
-	extra < 1 ? extra = 1 : 0;
-	wanted_number < 1 ? wanted_number = 1 : 0;
-	while (number_of_tests > 1)
-	{
-		result *= number_of_tests / wanted_number / extra / 2;
-		--number_of_tests;
-		--wanted_number < 1 ? wanted_number = 1 : 0;
-		--extra < 1 ? extra = 1 : 0;
-	}
-	return result / 2;
-}
-
-double ActiveAI::TireEffectivness(const std::vector<std::string>& tire_attributes, const std::vector<std::string>& tour)
-{
-	double score = 0.0;
-	double x;
-	double y;
-
-	for (int i = 0; i < static_cast<int>(GameValues::TerrainTypes); ++i)
-	{
-		for (int j = 0; j < static_cast<int>(tire_attributes[i].size()); ++j)
-		{
-			if (tire_attributes[i][j] == 'x')
-			{
-				x = atof(tire_attributes[i].substr(0, j).c_str());
-				y = atof(tire_attributes[i].substr(j + 1, static_cast<int>(tire_attributes[i].size()) - j - 1).c_str());
-				break;
-			}
-		}
-		std::array<int, GameValues::TerrainTypes> terrain = CountTerrainTypes(tour);
-		for (int j = 0; j < static_cast<int>(y - x + 1); ++j)
-		{
-			score += AvarageProbabilityOfTires(y, j) * terrain[i];
-		}
-	}
-	return score;
-}
-
-double ActiveAI::CarParameterScore(double value, double increasing_bound, bool decrease_after)
-{
-	double after_the_peak = value > increasing_bound;
-	if (after_the_peak && decrease_after)
-	{
-		value = 2 * increasing_bound - value;
-		if (value < 0)
-		{
-			value = 0;
-		}
-	}
-	else
-	{
-		if (after_the_peak)
-		{
-			value = increasing_bound;
-		}
-	}
-	return (value / increasing_bound)*(value / increasing_bound);
-}
-
-int ActiveAI::OptimumMaximumSpeed(const std::vector<std::string>& tour)
-{
-	double global_max = 0.0;
-	double local_max = 0.0;
-	for (int i = 0; i < static_cast<int>(tour.size()); ++i)
-	{
-		local_max += 75.0;
-		const int segment_size = static_cast<int>(tour[i].size());
-		if (segment_size > 1)
-		{
-			double safe_speed = atof(tour[i].substr(1, segment_size - 1).c_str());
-			if (safe_speed < local_max)
-			{
-				local_max = safe_speed;
-			}
-		}
-		if (local_max >= 900)
-		{
-			local_max = 900;
-		}
-		if (local_max > global_max)
-		{
-			global_max = local_max;
-		}
-	}
-	return static_cast<int>(global_max);
-}
-
-
 ActiveAI::ActiveAI()
 {
 	behaviour = static_cast<GameValues::Behaviour>(rand() % GameValues::Behaviour::last);
 }
-
 std::string ActiveAI::GetName()
 {
 	static std::vector<std::vector<const char*>> names = { { "Mark Driver", "Isao Fujimoto", "Miguela Aguela", "Hans Ufner", "Igor Belov", "Andrew Anderson", "Jane Turning", "Sam Samson", "Ed Thompson", "Barbara Hudson",
@@ -250,14 +257,14 @@ std::string ActiveAI::GetName()
 
 	return ret;
 }
-
 void ActiveAI::TryCar(const std::vector<int>& car_attributes, const std::vector<std::string>& tour, std::string car_path)
 {
-	double local_score = 1;
+	double local_score = 1.0;
 	const static double optimum_max_speed = OptimumMaximumSpeed(tour);
 	std::array<double, CarAttributes::last> maximum_value;
 	std::array<double, CarAttributes::last> value_weight;
 
+	//setting peak values for attributes
 	maximum_value[CarAttributes::max_speed] = optimum_max_speed;
 	maximum_value[CarAttributes::max_accelerating] = car_attributes[CarAttributes::max_speed];
 	maximum_value[CarAttributes::max_braking] = car_attributes[CarAttributes::max_speed] * 0.9;
@@ -267,10 +274,13 @@ void ActiveAI::TryCar(const std::vector<int>& car_attributes, const std::vector<
 	maximum_value[CarAttributes::turn_mod] = 300;
 	maximum_value[CarAttributes::drift_mod] = 300;
 
+	//setting weights for diffrent ai behaviour in order:
+	//max speed, max_accelerating, max_braking, hand_brake_value, durability, visibility, turn_mod, drift_mod
 	switch (behaviour)
 	{
 		case GameValues::Drifter:
 		{
+			
 			value_weight = { 3.0, 6.0, 0.5, 9.9, 5.0, 2.0, 0.0, 10.0 };
 			break;
 		}
@@ -285,6 +295,7 @@ void ActiveAI::TryCar(const std::vector<int>& car_attributes, const std::vector<
 			break;
 		}
 	}
+	//Calculating total score for a car and comparing it to the best option
 	double max_speed_modifier = CarParameterScore(car_attributes[CarAttributes::max_speed], maximum_value[CarAttributes::max_speed], false);
 	for (int i = 0; i < CarAttributes::last; ++i)
 	{
@@ -303,7 +314,6 @@ void ActiveAI::TryCar(const std::vector<int>& car_attributes, const std::vector<
 
 	}
 }
-
 void ActiveAI::TryTires(const std::vector<std::string>& tire_attributes, const std::vector<std::string>& tour, std::string tire_path)
 {
 	double local_score = TireEffectivness(tire_attributes, tour);
@@ -316,9 +326,9 @@ void ActiveAI::TryTires(const std::vector<std::string>& tire_attributes, const s
 }
 std::pair<int, int> ActiveAI::GetAction(int id, const std::vector<std::string>& all_attributes, const std::vector<std::string>& tour)
 {
+	//placeholder
 	return std::pair<int, int>(4, 0);
 }
-
 int ActiveAI::GetAttack(int id, const std::vector<std::string>& all_attributes, const std::vector<std::string>& tour)
 {
 	std::vector<double> score_vector = {};
@@ -329,44 +339,29 @@ int ActiveAI::GetAttack(int id, const std::vector<std::string>& all_attributes, 
 
 	switch (behaviour)
 	{
+		//always attacking opponents on the front as well as on the back 
 		case GameValues::Behaviour::Aggressive:
 		{
-			return Target(id, score_vector, -GameValues::attack_backward_distance, GameValues::attack_forward_distance); //both ways attacking attacking
+			return SelectTarget(id, score_vector, -GameValues::attack_backward_distance, GameValues::attack_forward_distance); 
 		}
+		//only attacking opponents on the front when the current segment is not a turn
 		case GameValues::Behaviour::Drifter:
 		{
 			if (static_cast<int>(tour[0].size()) > 1 || static_cast<int>(tour[1].size()) > 1)
 			{
-				return Target(id, score_vector, 0, GameValues::attack_forward_distance); //both ways attacking attacking
+				return SelectTarget(id, score_vector, 0, GameValues::attack_forward_distance);
 			}
 			break;
 		}
+		//only attacking opponents on the front when durability is above 33%
 		case GameValues::Behaviour::Balanced:
 		{
 			if (atof(all_attributes[id*3+1].c_str()) < static_cast<double>(car_attributes[CarAttributes::durability])*0.33)
 			{
-				return Target(id, score_vector, 0, GameValues::attack_forward_distance); //both ways attacking attacking
+				return SelectTarget(id, score_vector, 0, GameValues::attack_forward_distance); //both ways attacking attacking
 			}
 			break;
 		}
 	}
 	return 10;
-}
-int ActiveAI::Target(int id, std::vector<double> local_score, double lower_bound, double upper_bound)
-{
-	int selected_id = 10;
-	double high_score = lower_bound;
-	for (int i = 0; i < static_cast<int>(local_score.size()); ++i)
-	{
-		if (id != i)
-		{
-			//const double local_score = atof(data[i * 3 + 2].c_str());
-			if (local_score[id] <= local_score[i] + upper_bound && local_score[id] >= local_score[i] + lower_bound && high_score >= local_score[i])
-			{
-				selected_id = i;
-				high_score = local_score[i];
-			}
-		}
-	}
-	return selected_id;
 }
