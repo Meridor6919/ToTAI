@@ -13,8 +13,8 @@ std::array<int, GameValues::TerrainTypes> ActiveAI::CountTerrainTypes(const std:
 double ActiveAI::AvarageProbabilityOfTires(double number_of_tests, double wanted_number)
 {
 	double result = 1;
-	double extra = (number_of_tests - wanted_number) < 1 ? 1.0 : 0.0;
-	wanted_number < 1 ? wanted_number = 1 : 0;
+	double extra = (number_of_tests - wanted_number) < 1 ? 1.0 : (number_of_tests - wanted_number);
+	wanted_number < 1 ? wanted_number = 1 : wanted_number;
 	while (number_of_tests > 1)
 	{
 		result *= number_of_tests / wanted_number / extra / 2;
@@ -120,7 +120,7 @@ double ActiveAI::EvaluateChance(std::string field, const double speed, const boo
 		return 0.0;
 	}
 	field.erase(0, 1);
-	float base = (speed / atof(field.c_str()) - 1) * 100.0 + speed - atof(field.c_str());
+	double base = (speed / atof(field.c_str()) - 1) * 100.0 + speed - atof(field.c_str());
 
 	if (base < 0.0)
 	{
@@ -133,7 +133,7 @@ double ActiveAI::EvaluateChance(std::string field, const double speed, const boo
 		{
 			base = 100.0;
 		}
-		float result = (speed + base) / 2.0;
+		double result = (speed + base) / 2.0;
 		if (base < speed)
 		{
 			result = (speed + base * 2.0) / 3.0;
@@ -191,7 +191,7 @@ double ActiveAI::MaximumSpeedOnTurn(std::string field, const double chance_to_fa
 		{
 			result = secondary_result;
 		}
-		float base = ((result / atof(field.c_str()) - 1.0) * 100.0 + result - atof(field.c_str())) /
+		double base = ((result / atof(field.c_str()) - 1.0) * 100.0 + result - atof(field.c_str())) /
 			(static_cast<double>(car_attributes[CarAttributes::drift_mod]) / 100.0);
 
 		if (base > 100.0)
@@ -327,7 +327,7 @@ void ActiveAI::TryTires(const std::vector<std::string>& tire_attributes, const s
 std::pair<int, int> ActiveAI::GetAction(int id, const std::vector<std::string>& all_attributes, const std::vector<std::string>& tour)
 {
 	//placeholder
-	return std::pair<int, int>(4, 0);
+	return std::pair<int, int>(0, 10);
 }
 int ActiveAI::GetAttack(int id, const std::vector<std::string>& all_attributes, const std::vector<std::string>& tour)
 {
