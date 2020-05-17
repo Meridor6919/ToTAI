@@ -99,7 +99,7 @@ int ActiveAI::OptimumMaximumSpeed(const std::vector<std::string>& tour)
 int ActiveAI::SelectTarget(int id, std::vector<double> local_score, double lower_bound, double upper_bound)
 {
 	int selected_id = 10;
-	double high_score = lower_bound;
+	double high_score = local_score[id] - lower_bound;
 	for (int i = 0; i < static_cast<int>(local_score.size()); ++i)
 	{
 		if (id != i)

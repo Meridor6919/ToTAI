@@ -100,6 +100,7 @@ void AI::GamePhase()
 			}
 		}
 		tour.erase(tour.begin());
+		first_turn = false;
 	}
 	pipe_connection->Exit();
 }
