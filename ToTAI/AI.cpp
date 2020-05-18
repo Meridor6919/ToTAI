@@ -92,7 +92,7 @@ void AI::GamePhase()
 			{
 				if (!first_turn)
 				{
-					int target = ai_object[i].GetAttack(i, current_attributes, tour);
+					int target = ai_object[i].GetAttack(i + number_of_participants - number_of_ais, current_attributes, tour);
 					pipe_connection->SetAttack(i, target);
 				}
 				std::pair<int, int> action = ai_object[i].GetAction(i, current_attributes, tour);

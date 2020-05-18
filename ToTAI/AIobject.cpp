@@ -36,7 +36,7 @@ std::pair<int, int> AIobject::GetAction(int id, const std::vector<std::string>& 
 	return std::pair<int, int>(4, 0);
 }
 
-int AIobject::GetAttack(int id, const std::vector<std::string>& all_attributes, const std::vector<std::string>& tour)
+int AIobject::GetAttack(int global_id, const std::vector<std::string>& all_attributes, const std::vector<std::string>& tour)
 {
 	return 10;
 }

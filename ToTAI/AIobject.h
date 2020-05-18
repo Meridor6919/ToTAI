@@ -18,5 +18,5 @@ public:
 	std::string GetBestTires();
 	virtual std::string GetName();
 	virtual std::pair<int, int> GetAction(int id, const std::vector<std::string> &all_attributes, const std::vector<std::string> &tour);
-	virtual int GetAttack(int id, const std::vector<std::string> &all_attributes, const std::vector<std::string> &tour);
+	virtual int GetAttack(int global_id, const std::vector<std::string> &all_attributes, const std::vector<std::string> &tour);
 };

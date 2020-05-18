@@ -329,7 +329,7 @@ std::pair<int, int> ActiveAI::GetAction(int id, const std::vector<std::string>& 
 	//placeholder
 	return std::pair<int, int>(0, 10);
 }
-int ActiveAI::GetAttack(int id, const std::vector<std::string>& all_attributes, const std::vector<std::string>& tour)
+int ActiveAI::GetAttack(int global_id, const std::vector<std::string>& all_attributes, const std::vector<std::string>& tour)
 {
 	std::vector<double> score_vector = {};
 	for (int i = 0; i < static_cast<int>(all_attributes.size()) / 3; ++i)
@@ -342,23 +342,23 @@ int ActiveAI::GetAttack(int id, const std::vector<std::string>& all_attributes, 
 		//always attacking opponents on the front as well as on the back 
 		case GameValues::Behaviour::Aggressive:
 		{
-			return SelectTarget(id, score_vector, -GameValues::attack_backward_distance, GameValues::attack_forward_distance); 
+			return SelectTarget(global_id, score_vector, -GameValues::attack_backward_distance, GameValues::attack_forward_distance);
 		}
 		//only attacking opponents on the front when the current segment is not a turn
 		case GameValues::Behaviour::Drifter:
 		{
 			if (static_cast<int>(tour[0].size()) > 1 || static_cast<int>(tour[1].size()) > 1)
 			{
-				return SelectTarget(id, score_vector, 0, GameValues::attack_forward_distance);
+				return SelectTarget(global_id, score_vector, 0, GameValues::attack_forward_distance);
 			}
 			break;
 		}
 		//only attacking opponents on the front when durability is above 33%
 		case GameValues::Behaviour::Balanced:
 		{
-			if (atof(all_attributes[id*3+1].c_str()) < static_cast<double>(car_attributes[CarAttributes::durability])*0.33)
+			if (atof(all_attributes[global_id *3+1].c_str()) < static_cast<double>(car_attributes[CarAttributes::durability])*0.33)
 			{
-				return SelectTarget(id, score_vector, 0, GameValues::attack_forward_distance); //both ways attacking attacking
+				return SelectTarget(global_id, score_vector, 0, GameValues::attack_forward_distance); //both ways attacking attacking
 			}
 			break;
 		}
