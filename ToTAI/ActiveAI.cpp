@@ -178,21 +178,21 @@ double ActiveAI::MaximumSpeedOnTurn(std::string field, const double chance_to_fa
 	{
 		return 0.0f;
 	}
+
+	const double required_speed = atof(field.c_str());
+	const double turn_modifier = static_cast<double>(car_attributes[CarAttributes::turn_mod + drift]);
 	field.erase(0, 1);
 
 	if (drift)
 	{
-		double result = (2.0 * chance_to_fail*static_cast<double>(car_attributes[CarAttributes::drift_mod]) + 10000.0 + 100.0 * atof(field.c_str())) /
-			(10000.0 / atof(field.c_str()) + 100.0 + static_cast<double>(car_attributes[CarAttributes::drift_mod]));
-		double secondary_result = (3.0 * chance_to_fail*static_cast<double>(car_attributes[CarAttributes::drift_mod]) + 20000.0 + 200.0 * atof(field.c_str())) /
-			(20000.0 / atof(field.c_str()) + 200.0 + static_cast<double>(car_attributes[CarAttributes::drift_mod]));
+		double result = (2.0 * chance_to_fail*turn_modifier + 10000.0 + 100.0 * required_speed) / (10000.0 / required_speed + 100.0 + turn_modifier);
+		double secondary_result = (3.0 * chance_to_fail*turn_modifier + 20000.0 + 200.0 *required_speed) / (20000.0 / required_speed + 200.0 + turn_modifier);
 
 		if (secondary_result > result)
 		{
 			result = secondary_result;
 		}
-		double base = ((result / atof(field.c_str()) - 1.0) * 100.0 + result - atof(field.c_str())) /
-			(static_cast<double>(car_attributes[CarAttributes::drift_mod]) / 100.0);
+		double base = ((result / required_speed - 1.0) * 100.0 + result - required_speed) / (turn_modifier / 100.0);
 
 		if (base > 100.0)
 		{
@@ -207,8 +207,8 @@ double ActiveAI::MaximumSpeedOnTurn(std::string field, const double chance_to_fa
 	else
 	{
 		double delta = (200.0 + 12.0 * chance_to_fail)*(200.0 + 12.0 * chance_to_fail) - 180.0 * chance_to_fail*chance_to_fail;
-		double base = (-(200.0 + 12.0 * chance_to_fail) + sqrt(delta)) / -10.0*((static_cast<double>(car_attributes[CarAttributes::turn_mod])) / 100.0);
-		return atof(field.c_str()) + base / (100.0 / atof(field.c_str()) + 1.0);
+		double base = (-(200.0 + 12.0 * chance_to_fail) + sqrt(delta)) / -10.0*(turn_modifier / 100.0);
+		return required_speed + base / (100.0 / required_speed + 1.0);
 	}
 }
 double ActiveAI::CalculateSpeed(const std::string &current_field, const double speed, const int acceleration_value)
