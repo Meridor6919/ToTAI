@@ -104,7 +104,7 @@ int ActiveAI::SelectTarget(int id, std::vector<double> local_score, double lower
 	{
 		if (id != i)
 		{
-			if (local_score[id] <= local_score[i] + upper_bound && local_score[id] >= local_score[i] + lower_bound && high_score >= local_score[i])
+			if (local_score[id] < local_score[i] + upper_bound && local_score[id] > local_score[i] + lower_bound && high_score >= local_score[i])
 			{
 				selected_id = i;
 				high_score = local_score[i];
@@ -334,7 +334,7 @@ int ActiveAI::GetAttack(int global_id, const std::vector<std::string>& all_attri
 	std::vector<double> score_vector = {};
 	for (int i = 0; i < static_cast<int>(all_attributes.size()) / 3; ++i)
 	{
-		score_vector.emplace_back(atof(all_attributes[i * 3].c_str()));
+		score_vector.emplace_back(atof(all_attributes[i * 3 + 2].c_str()));
 	}
 
 	switch (behaviour)

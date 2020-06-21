@@ -67,6 +67,10 @@ void AI::GamePhase()
 	bool first_turn = true;
 	while (static_cast<int>(tour.size()) > 0)
 	{
+		while (!pipe_connection->NewTurn(0))
+		{
+			std::this_thread::sleep_for(std::chrono::milliseconds(500));
+		}
 		std::vector<std::string> current_attributes = pipe_connection->GetAllAttributes(number_of_participants);
 		std::vector<double> durability = {};
 		int alive_participant = -1;
@@ -81,10 +85,6 @@ void AI::GamePhase()
 		if (alive_participant < 0)
 		{
 			break;
-		}
-		while (!pipe_connection->NewTurn(alive_participant))
-		{
-			std::this_thread::sleep_for(std::chrono::milliseconds(500));
 		}
 		for (int i = 0; i < number_of_ais; ++i)
 		{
