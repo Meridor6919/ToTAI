@@ -10,6 +10,7 @@ class AI
 	std::unique_ptr<PipeConnection> pipe_connection;
 	std::vector<std::string> tour;
 	std::vector<ActiveAI> ai_object;
+	std::vector<bool> alive;
 	int number_of_participants;
 	int number_of_ais;
 

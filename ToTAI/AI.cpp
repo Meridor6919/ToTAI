@@ -46,18 +46,14 @@ void AI::InitializationPhase()
 
 	for (int i = 0; i < number_of_ais; ++i)
 	{
+		alive.emplace_back(true);
 		ai_object.emplace_back(ActiveAI());
 		pipe_connection->SetName(i, ai_object[i].GetName());
 	}
 	CarSelection();
 	TiresSelection();
-	while (true)
+	while (!pipe_connection->NewTurn(0))
 	{
-		std::vector<std::string> current_attributes = pipe_connection->GetAllAttributes(number_of_participants);
-		if (atof(current_attributes[(number_of_participants - number_of_ais) * 3 + 1].c_str()) > 0.0)
-		{
-			break;
-		}
 		std::this_thread::sleep_for(std::chrono::milliseconds(500));
 	}
 }
@@ -67,28 +63,35 @@ void AI::GamePhase()
 	bool first_turn = true;
 	while (static_cast<int>(tour.size()) > 0)
 	{
-		while (!pipe_connection->NewTurn(0))
+		for (int i = 0; !pipe_connection->NewTurn(i); i = (i + 1) % number_of_ais)
 		{
-			std::this_thread::sleep_for(std::chrono::milliseconds(500));
-		}
-		std::vector<std::string> current_attributes = pipe_connection->GetAllAttributes(number_of_participants);
-		std::vector<double> durability = {};
-		int alive_participant = -1;
-		for (int i = 0; i < number_of_ais; ++i)
-		{
-			durability.emplace_back(atof(current_attributes[(number_of_participants - number_of_ais + i) * 3 + 1].c_str()));
-			if (durability[i] > 0.0)
+			if (alive[i])
 			{
-				alive_participant = i;
+				std::this_thread::sleep_for(std::chrono::milliseconds(500));
 			}
 		}
-		if (alive_participant < 0)
+		std::vector<std::string> current_attributes = pipe_connection->GetAllAttributes(number_of_participants);
+
+		bool someone_alive = false;
+		for (int i = 0; i < number_of_ais; ++i)
+		{
+			if (atof(current_attributes[(number_of_participants - number_of_ais + i) * 3 + 1].c_str()) <= 0.0)
+			{
+				alive[i] = false;
+			}
+			else
+			{
+				someone_alive = true;
+			}
+		}
+		if (!someone_alive)
 		{
 			break;
 		}
+
 		for (int i = 0; i < number_of_ais; ++i)
 		{
-			if (durability[i] > 0.0)
+			if (alive[i])
 			{
 				if (!first_turn)
 				{
