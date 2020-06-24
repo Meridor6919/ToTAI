@@ -324,10 +324,68 @@ void ActiveAI::TryTires(const std::vector<std::string>& tire_attributes, const s
 		this->tire_attributes = tire_attributes;
 	}
 }
-std::pair<int, int> ActiveAI::GetAction(int id, const std::vector<std::string>& all_attributes, const std::vector<std::string>& tour)
+std::pair<int, int> ActiveAI::GetAction(int global_id, const std::vector<std::string>& all_attributes, const std::vector<std::string>& tour)
 {
-	//placeholder
-	return std::pair<int, int>(0, 10);
+	double current_speed = atof(all_attributes[global_id * 3].c_str());
+	bool hand_brake_braking = car_attributes[CarAttributes::hand_brake_value] > car_attributes[CarAttributes::max_braking];
+	double safe_speed = 1.0;
+
+	switch (behaviour)
+	{
+		case GameValues::Behaviour::Drifter:
+		{
+			//always drift when possible
+			if (tour[0].size() > 1 && current_speed > GameValues::drift_value)
+			{
+				return std::pair<int, int>(Actions::hand_braking, 0);
+			}
+
+			//calculating safe_speed
+			for (int i = 0; i < car_attributes[CarAttributes::visibility]; ++i)
+			{
+				/*
+					TO DO Evaluate safe speed taking into consideration:
+						1. hand_braking in turns
+						2. friction
+						3. speed modulation depending on terrain type
+						4. risk
+						5. possible attacks
+				*/
+			}
+			//adjusting to car attributes
+			if (safe_speed - current_speed > car_attributes[CarAttributes::max_accelerating])
+			{
+				safe_speed = current_speed + car_attributes[CarAttributes::max_accelerating];
+			}
+			else if (current_speed - safe_speed > car_attributes[CarAttributes::max_braking + hand_brake_braking])
+			{
+				safe_speed = current_speed - car_attributes[CarAttributes::max_braking + hand_brake_braking];
+			}
+
+			//selecting action
+			int difference = safe_speed - current_speed;
+			if (difference < 0)
+			{
+				return std::pair<int, int>(Actions::braking + hand_brake_braking, difference);
+			}
+			else if (difference == 0)
+			{
+				return std::pair<int, int>(Actions::pass, difference);
+			}
+			else
+			{
+				return std::pair<int, int>(Actions::acceleration, difference);
+			}
+		}
+		case GameValues::Behaviour::Aggressive:
+		{
+			return std::pair<int, int>(Actions::acceleration, 10);//placeholder
+		}
+		case GameValues::Behaviour::Balanced:
+		{
+			return std::pair<int, int>(Actions::acceleration, 10);//placeholder
+		}	
+	}	
 }
 int ActiveAI::GetAttack(int global_id, const std::vector<std::string>& all_attributes, const std::vector<std::string>& tour)
 {

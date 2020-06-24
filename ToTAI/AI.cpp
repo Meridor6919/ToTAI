@@ -98,7 +98,7 @@ void AI::GamePhase()
 					int target = ai_object[i].GetAttack(i + number_of_participants - number_of_ais, current_attributes, tour);
 					pipe_connection->SetAttack(i, target);
 				}
-				std::pair<int, int> action = ai_object[i].GetAction(i, current_attributes, tour);
+				std::pair<int, int> action = ai_object[i].GetAction(i + number_of_participants - number_of_ais, current_attributes, tour);
 				pipe_connection->SetAction(i, action.first, action.second);
 			}
 		}

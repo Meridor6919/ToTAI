@@ -32,9 +32,21 @@ namespace GameValues {
 		Balanced,
 		last
 	};
-	const int TerrainTypes = 6;
-	const int attack_forward_distance = 4;
-	const int attack_backward_distance = 6;
+	constexpr int TerrainTypes = 6;
+	constexpr int attack_forward_distance = 4;
+	constexpr int attack_backward_distance = 6;
+	constexpr double drift_value = 30.0;
+}
+namespace Actions {
+	enum ActionType {
+		acceleration,
+		braking,
+		hand_braking,
+		pass,
+		resign,
+		last
+	};
+
 }
 namespace CarAttributes
 {

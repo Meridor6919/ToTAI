@@ -31,7 +31,7 @@ public:
 	std::string GetName() override;
 	void TryCar(const std::vector<int>& car_attributes, const std::vector<std::string>& tour, std::string car_path) override;
 	void TryTires(const std::vector<std::string>& tire_attributes, const std::vector<std::string>& tour, std::string tire_path) override;
-	std::pair<int, int> GetAction(int id, const std::vector<std::string>& all_attributes, const std::vector<std::string>& tour) override;
+	std::pair<int, int> GetAction(int global_id, const std::vector<std::string>& all_attributes, const std::vector<std::string>& tour) override;
 	int GetAttack(int global_id, const std::vector<std::string>& all_attributes, const std::vector<std::string>& tour) override;
 
 };
