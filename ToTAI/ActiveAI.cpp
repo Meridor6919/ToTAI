@@ -234,6 +234,7 @@ double ActiveAI::CalculateSpeed(const std::string &current_field, const double s
 ActiveAI::ActiveAI()
 {
 	behaviour = static_cast<GameValues::Behaviour>(rand() % GameValues::Behaviour::last);
+	risk = static_cast<double>(rand() % 300 + 5 * (1 + (behaviour == GameValues::Behaviour::Aggressive))) / 10.0;
 }
 std::string ActiveAI::GetName()
 {
@@ -328,7 +329,7 @@ std::pair<int, int> ActiveAI::GetAction(int global_id, const std::vector<std::st
 {
 	double current_speed = atof(all_attributes[global_id * 3].c_str());
 	bool hand_brake_braking = car_attributes[CarAttributes::hand_brake_value] > car_attributes[CarAttributes::max_braking];
-	double safe_speed = 1.0;
+	double safe_speed = car_attributes[CarAttributes::max_speed]*1.25;
 
 	switch (behaviour)
 	{
@@ -341,17 +342,26 @@ std::pair<int, int> ActiveAI::GetAction(int global_id, const std::vector<std::st
 			}
 
 			//calculating safe_speed
-			for (int i = 0; i < car_attributes[CarAttributes::visibility]; ++i)
-			{
-				/*
+			/*
 					TO DO Evaluate safe speed taking into consideration:
 						1. hand_braking in turns
 						2. friction
 						3. speed modulation depending on terrain type
 						4. risk
 						5. possible attacks
+						6. durability burning
 				*/
+			for (int i = 0; i < car_attributes[CarAttributes::visibility]; ++i)
+			{
+				
 			}
+
+			//durability burning check
+			if (safe_speed > car_attributes[CarAttributes::max_speed])
+			{
+
+			}
+
 			//adjusting to car attributes
 			if (safe_speed - current_speed > car_attributes[CarAttributes::max_accelerating])
 			{

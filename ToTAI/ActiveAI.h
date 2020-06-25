@@ -10,6 +10,7 @@ protected:
 	GameValues::Behaviour behaviour;
 	double best_tires_score = 0.0;
 	double best_car_score = 0.0;
+	double risk = 0.0;
 
 	//tires selection methods
 	std::array<int, GameValues::TerrainTypes> CountTerrainTypes(const std::vector<std::string>& tour);
