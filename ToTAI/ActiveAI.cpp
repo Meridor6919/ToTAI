@@ -172,7 +172,11 @@ double ActiveAI::CalculateBurning(double value)
 	result = value * static_cast<double>(level + level * level) / 2.0;
 	return result / 50.0;
 }
-double ActiveAI::MaximumSpeedOnTurn(std::string field, const double chance_to_fail, const bool drift)
+double ActiveAI::CalculateBurningInversed(double burning)
+{
+	return 0.0;
+}
+double ActiveAI::EvaluateChanceInversed(std::string field, const double chance_to_fail, const bool drift)
 {
 	if (static_cast<int>(field.size()) < 2)
 	{
@@ -328,6 +332,7 @@ void ActiveAI::TryTires(const std::vector<std::string>& tire_attributes, const s
 std::pair<int, int> ActiveAI::GetAction(int global_id, const std::vector<std::string>& all_attributes, const std::vector<std::string>& tour)
 {
 	double current_speed = atof(all_attributes[global_id * 3].c_str());
+	double current_durability = atof(all_attributes[global_id * 3 + 1].c_str());
 	bool hand_brake_braking = car_attributes[CarAttributes::hand_brake_value] > car_attributes[CarAttributes::max_braking];
 	double safe_speed = car_attributes[CarAttributes::max_speed]*1.25;
 
@@ -349,7 +354,6 @@ std::pair<int, int> ActiveAI::GetAction(int global_id, const std::vector<std::st
 						3. speed modulation depending on terrain type
 						4. risk
 						5. possible attacks
-						6. durability burning
 				*/
 			for (int i = 0; i < car_attributes[CarAttributes::visibility]; ++i)
 			{
@@ -359,9 +363,9 @@ std::pair<int, int> ActiveAI::GetAction(int global_id, const std::vector<std::st
 			//durability burning check
 			if (safe_speed > car_attributes[CarAttributes::max_speed])
 			{
-
+				double allowed_burning = current_durability * (0.65 + risk / 100.0) / static_cast<double>(tour.size());
+				safe_speed = CalculateBurningInversed(allowed_burning);
 			}
-
 			//adjusting to car attributes
 			if (safe_speed - current_speed > car_attributes[CarAttributes::max_accelerating])
 			{

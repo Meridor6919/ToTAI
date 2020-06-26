@@ -23,8 +23,9 @@ protected:
 	int SelectTarget(int id, std::vector<double> local_score, double lower_bound, double upper_bound);
 	//action method
 	double EvaluateChance(std::string field, const double speed, const bool drift);
+	double EvaluateChanceInversed(std::string field, const double chance_to_fail, const bool drift);
 	double CalculateBurning(double value);
-	double MaximumSpeedOnTurn(std::string field, const double chance_to_fail, const bool drift);
+	double CalculateBurningInversed(double burning);
 	double CalculateSpeed(const std::string &current_field, const double speed, const int acceleration_value);
 
 public:
