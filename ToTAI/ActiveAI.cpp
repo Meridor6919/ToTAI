@@ -174,7 +174,26 @@ double ActiveAI::CalculateBurning(double value)
 }
 double ActiveAI::CalculateBurningInversed(double burning)
 {
-	return 0.0;
+	double lower_bound = 0;
+	double higher_bound = static_cast<double>(car_attributes[CarAttributes::max_speed]) * 1.25 - static_cast<double>(car_attributes[CarAttributes::max_speed]);
+
+	while (true)
+	{
+		double temp = burning - CalculateBurning((lower_bound + higher_bound) / 2);
+		if (temp < 0.01 && temp > -0.01)
+		{
+			return (lower_bound + higher_bound) / 2;
+		}
+		else if (temp < 0)
+		{
+			higher_bound = (lower_bound + higher_bound) / 2;
+		}
+		else
+		{
+			lower_bound = (lower_bound + higher_bound) / 2;
+		}
+	}
+	return burning;
 }
 double ActiveAI::EvaluateChanceInversed(std::string field, const double chance_to_fail, const bool drift)
 {
