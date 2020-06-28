@@ -75,7 +75,7 @@ void AI::GamePhase()
 		bool someone_alive = false;
 		for (int i = 0; i < number_of_ais; ++i)
 		{
-			if (atof(current_attributes[(number_of_participants - number_of_ais + i) * 3 + 1].c_str()) <= 0.0)
+			if (atof(current_attributes[(number_of_participants - number_of_ais + i) * 3 + +CarAttributes::RecvData::current_durability].c_str()) <= 0.0)
 			{
 				alive[i] = false;
 			}

@@ -50,7 +50,7 @@ namespace Actions {
 }
 namespace CarAttributes
 {
-	enum
+	enum Types
 	{
 		max_speed,
 		max_accelerating,
@@ -61,5 +61,11 @@ namespace CarAttributes
 		turn_mod,
 		drift_mod,
 		last
+	};
+	enum RecvData
+	{
+		current_speed,
+		current_durability,
+		current_score
 	};
 }
