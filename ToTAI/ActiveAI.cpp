@@ -176,8 +176,9 @@ double ActiveAI::CalculateBurningInversed(double burning)
 {
 	double lower_bound = 0;
 	double higher_bound = static_cast<double>(car_attributes[CarAttributes::Types::max_speed]) * 1.25 - static_cast<double>(car_attributes[CarAttributes::Types::max_speed]);
+	int max_number_of_iterations = 0;
 
-	while (true)
+	for (int i = 0; i < 10000; ++i)
 	{
 		double temp = burning - CalculateBurning((lower_bound + higher_bound) / 2);
 		if (temp < 0.01 && temp > -0.01)
@@ -362,7 +363,7 @@ std::pair<int, int> ActiveAI::GetAction(int global_id, const std::vector<std::st
 			//always drift when possible
 			if (tour[0].size() > 1 && current_speed > GameValues::drift_value)
 			{
-				return std::pair<int, int>(Actions::hand_braking, 0);
+				return std::pair<int, int>(Actions::hand_braking, -car_attributes[CarAttributes::Types::hand_brake_value]);
 			}
 
 			//calculating safe_speed
@@ -383,7 +384,7 @@ std::pair<int, int> ActiveAI::GetAction(int global_id, const std::vector<std::st
 			if (safe_speed > car_attributes[CarAttributes::Types::max_speed])
 			{
 				double allowed_burning = current_durability * (0.65 + risk / 100.0) / static_cast<double>(tour.size());
-				safe_speed = CalculateBurningInversed(allowed_burning);
+				safe_speed = car_attributes[CarAttributes::Types::max_speed] + CalculateBurningInversed(allowed_burning);
 			}
 			//adjusting to car attributes
 			if (safe_speed - current_speed > car_attributes[CarAttributes::Types::max_accelerating])
@@ -399,7 +400,7 @@ std::pair<int, int> ActiveAI::GetAction(int global_id, const std::vector<std::st
 			double difference = safe_speed - current_speed;
 			if (difference < 0)
 			{
-				return std::pair<int, int>(Actions::braking + hand_brake_braking, difference);
+				return std::pair<int, int>(Actions::braking + hand_brake_braking, (hand_brake_braking ? -car_attributes[CarAttributes::Types::hand_brake_value] : difference));
 			}
 			else if (difference == 0)
 			{
