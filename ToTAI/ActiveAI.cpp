@@ -426,7 +426,14 @@ int ActiveAI::GetAttack(int global_id, const std::vector<std::string>& all_attri
 	std::vector<double> score_vector = {};
 	for (int i = 0; i < static_cast<int>(all_attributes.size()) / 3; ++i)
 	{
-		score_vector.emplace_back(atof(all_attributes[i * 3 + CarAttributes::RecvData::current_score].c_str()));
+		if (atof(all_attributes[i * 3 + CarAttributes::RecvData::current_durability].c_str()) > 0.0)
+		{
+			score_vector.emplace_back(atof(all_attributes[i * 3 + CarAttributes::RecvData::current_score].c_str()));
+		}
+		else
+		{
+			score_vector.emplace_back(-GameValues::attack_forward_distance-1);
+		}
 	}
 
 	switch (behaviour)
